@@ -4,12 +4,12 @@ package com.dropandmerge.numbers;
 
 public class LinkedList<T extends Number> {
 
-    NodeClass<T> head;
+    com.dropandmerge.numbers.NodeClass<T> head;
     int size;
     int[][] matrix = new int[7][5];
 
     public boolean check(int column) { //checks whether a node with that column number already exists in the LinkedList
-        NodeClass<T> temp = head;
+        com.dropandmerge.numbers.NodeClass<T> temp = head;
         while (temp != null) {
             if (temp.column == column) {
                 return true;
