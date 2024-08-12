@@ -1,5 +1,6 @@
 
 package dropNumber;
+import dropNumber.Game;
 
 
 public class LinkedList<T extends Number> {
@@ -97,8 +98,8 @@ public class LinkedList<T extends Number> {
     public void fillMatrix() { //fills the matrix with the values in the LinkedList
         NodeClass<T> temp = head;
         NodeClass<T> tempHead = head;
-        matrix = new int[7][5];
-        int row = 6;
+        matrix = new int[6][5];
+        int row = 5;
         while (tempHead != null) {
             while (temp != null) {
                 matrix[row][temp.column] = (int) temp.value;
@@ -107,7 +108,7 @@ public class LinkedList<T extends Number> {
             }
             tempHead = tempHead.right;
             temp = tempHead;
-            row = 6; //we should reset the row value when we move to a new row
+            row = 5; //we should reset the row value when we move to a new row
         }
     }
 
