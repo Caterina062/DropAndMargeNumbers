@@ -1,7 +1,15 @@
-import javax.swing.*;
-import java.awt.*;
+package dropNumber;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
-import java.util.LinkedList;
+import java.awt.event.ActionListener;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 public class Game extends JFrame {
     JFrame frame = new JFrame();
@@ -26,11 +34,11 @@ public class Game extends JFrame {
         this.matrix = matrix;
     }
 
-    public GameFrame() {
+    public Game() {
 
         getContentPane().setBackground(Color.WHITE);
         setSize(350, 500);
-        setTitle("Drop Number Game");
+        setTitle("Drop Number dropNumber.Game");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         button.setVisible(true);
         button.setBounds(120, 400, 100, 40);
@@ -50,7 +58,7 @@ public class Game extends JFrame {
             setMatrix(list.getMatrix());
             repaint();
         } else {
-            JOptionPane.showMessageDialog(this, "Game has finished", "Warning", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "dropNumber.Game has finished", "Warning", JOptionPane.WARNING_MESSAGE);
             button.setEnabled(false);
         }
     }

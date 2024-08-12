@@ -1,15 +1,15 @@
 
-package com.dropandmerge.numbers;
+package dropNumber;
 
 
 public class LinkedList<T extends Number> {
 
-    com.dropandmerge.numbers.NodeClass<T> head;
+    NodeClass<T> head;
     int size;
     int[][] matrix = new int[7][5];
 
     public boolean check(int column) { //checks whether a node with that column number already exists in the LinkedList
-        com.dropandmerge.numbers.NodeClass<T> temp = head;
+        NodeClass<T> temp = head;
         while (temp != null) {
             if (temp.column == column) {
                 return true;

@@ -1,5 +1,5 @@
 
-package com.dropandmerge.numbers;
+package dropNumber;
 
 public class NodeClass<T extends Number> {
     NodeClass up;
