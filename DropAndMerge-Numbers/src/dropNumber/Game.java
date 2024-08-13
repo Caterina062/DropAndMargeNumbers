@@ -37,6 +37,7 @@ public class Game extends JFrame {
     */
 
     Random random = new Random();
+    int colonnaScelta=0;
 
 
     void setMatrix(int[][] matrix) {
@@ -70,10 +71,11 @@ public class Game extends JFrame {
     }
     int genereteBlock(){
         int[] possibleValues= {2, 4, 8, 16, 32};
-        prossimoValore.setText("Prossimo valore: "+ possibleValues[random.nextInt(possibleValues.length)]);
-
-        return possibleValues[random.nextInt(possibleValues.length)];
+        int valore= possibleValues[random.nextInt(possibleValues.length)];
+        prossimoValore.setText("Prossimo valore: "+ valore);
+        return valore;
     }
+
 
     public void actionPerformed(ActionEvent e) {
         int value= genereteBlock();
@@ -91,7 +93,8 @@ public class Game extends JFrame {
             button.setEnabled(false);
         }*/
         String colonnaStr = JOptionPane.showInputDialog(this, "inserire colonna: " );
-        int colonnaScelta= Integer.parseInt(colonnaStr);
+        //int colonnaScelta= Integer.parseInt(colonnaStr);
+        colonnaScelta= Integer.parseInt(colonnaStr);
         for(int i = colonna-1; i>=0; i--){
             if (matrix[i][colonnaScelta] == 0) {
                 matrix[i][colonnaScelta] = value;
@@ -102,14 +105,67 @@ public class Game extends JFrame {
 
         scoreLabel.setText("Score: " + score);
         //list.add(matrixOrder[counter][1], matrixOrder[counter][0]);
-
         //list.fillMatrix();
         //list.sumTiles();
         //counter++;
         //setMatrix(list.getMatrix());
+
         repaint();
         blockOnTop();
+        merge();
     }
+    void merge() {
+        for (int i = colonna - 1; i > 0; i--) {
+            boolean merge=true;
+            while (merge) {
+                merge = false;
+                if (matrix[i][colonnaScelta] != 0) {
+                    int valore = matrix[i][colonnaScelta];
+
+                    if (valore == matrix[i - 1][colonnaScelta]) {  //merge sotto
+                        matrix[i][colonnaScelta] *= 2;  // Unisci i blocchi
+                        matrix[i - 1][colonnaScelta] = 0; // Rendi la casella sopra vuota
+                        score += matrix[i][colonnaScelta];  // Aggiorna il punteggio
+
+                        // Fai scendere i blocchi sopra lo spazio vuoto
+                        for (int k = i - 1; k > 0; k--) {
+                            matrix[k][colonnaScelta] = matrix[k - 1][colonnaScelta];
+                            matrix[k - 1][colonnaScelta] = 0;
+                        }
+                        merge=true;
+                    }
+
+                    if (valore == matrix[i][colonnaScelta - 1] && colonnaScelta != 0) { //merge a sinistra
+                        matrix[i][colonnaScelta] *= 2;
+                        matrix[i][colonnaScelta - 1] = 0;
+                        score += matrix[i][colonnaScelta];
+
+                        for (int k = i - 1; k > 0; k--) {
+                            matrix[k][colonnaScelta] = matrix[k - 1][colonnaScelta];
+                            matrix[k - 1][colonnaScelta] = 0;
+                        }
+                        merge=true;
+                    }
+
+                    if (valore == matrix[i][colonnaScelta + 1] && colonnaScelta != colonna - 1) { //merge a destra
+                        matrix[i][colonnaScelta] *= 2;
+                        matrix[i][colonnaScelta + 1] = 0;
+                        score += matrix[i][colonnaScelta];
+
+                        for (int k = i - 1; k > 0; k--) {
+                            matrix[k][colonnaScelta] = matrix[k - 1][colonnaScelta];
+                            matrix[k - 1][colonnaScelta] = 0;
+                        }
+                        merge=true;
+                    }
+                }
+            }
+        }
+        scoreLabel.setText("Score: " + score);
+        repaint();
+    }
+
+
     void blockOnTop(){
         for(int i=0; i<riga; i++){
             if(matrix[0][i]!=0){
