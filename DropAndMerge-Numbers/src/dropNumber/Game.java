@@ -15,7 +15,8 @@ public class Game extends JFrame {
     JPanel panel = new JPanel();
     JButton button = new JButton("Inizio");
     int score=0;
-    JLabel scoreLabel= new JLabel("Score: "+ score);
+
+    JLabel scoreLabel= new JLabel("Score: \n"+ score);
     JLabel prossimoValore= new JLabel("Prossimo valore: ");
     int colonna = 6;
     int riga= 5;
@@ -58,7 +59,7 @@ public class Game extends JFrame {
         setLocationRelativeTo(null);
 
         add(scoreLabel);
-        scoreLabel.setBounds(500, 120, 100, 40);
+        scoreLabel.setBounds(500, 120, 1000, 50);
         scoreLabel.setVisible(true);
         scoreLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
         scoreLabel.setForeground(Color.black);
@@ -103,7 +104,7 @@ public class Game extends JFrame {
             }
         }
 
-        scoreLabel.setText("Score: " + score);
+        scoreLabel.setText("Score: \n"+ score);
         //list.add(matrixOrder[counter][1], matrixOrder[counter][0]);
         //list.fillMatrix();
         //list.sumTiles();
@@ -146,7 +147,7 @@ public class Game extends JFrame {
                 }
             }
         }
-        scoreLabel.setText("Score: " + score);
+        scoreLabel.setText("Score: \n" + score);
         repaint();
     }
 
