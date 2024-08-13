@@ -126,12 +126,6 @@ public class Game extends JFrame {
                         matrix[i][colonnaScelta] *= 2;  // Unisci i blocchi
                         matrix[i - 1][colonnaScelta] = 0; // Rendi la casella sopra vuota
                         score += matrix[i][colonnaScelta];  // Aggiorna il punteggio
-
-                        // Fai scendere i blocchi sopra lo spazio vuoto
-                        for (int k = i - 1; k > 0; k--) {
-                            matrix[k][colonnaScelta] = matrix[k - 1][colonnaScelta];
-                            matrix[k - 1][colonnaScelta] = 0;
-                        }
                         merge=true;
                     }
 
@@ -139,11 +133,6 @@ public class Game extends JFrame {
                         matrix[i][colonnaScelta] *= 2;
                         matrix[i][colonnaScelta - 1] = 0;
                         score += matrix[i][colonnaScelta];
-
-                        for (int k = i - 1; k > 0; k--) {
-                            matrix[k][colonnaScelta] = matrix[k - 1][colonnaScelta];
-                            matrix[k - 1][colonnaScelta] = 0;
-                        }
                         merge=true;
                     }
 
@@ -151,18 +140,25 @@ public class Game extends JFrame {
                         matrix[i][colonnaScelta] *= 2;
                         matrix[i][colonnaScelta + 1] = 0;
                         score += matrix[i][colonnaScelta];
-
-                        for (int k = i - 1; k > 0; k--) {
-                            matrix[k][colonnaScelta] = matrix[k - 1][colonnaScelta];
-                            matrix[k - 1][colonnaScelta] = 0;
-                        }
                         merge=true;
                     }
+                    scendi();
                 }
             }
         }
         scoreLabel.setText("Score: " + score);
         repaint();
+    }
+
+    void scendi(){
+        for(int i=colonna-1; i>0; i--){
+            for(int j=0; j<riga; j++){
+                if(matrix[i][j]==0){
+                    matrix[i][j]=matrix[i-1][j];
+                    matrix[i-1][j]=0;
+                }
+            }
+        }
     }
 
 
