@@ -16,12 +16,13 @@ public class Game extends JFrame {
     JButton button = new JButton("Inizio");
     int score=0;
     JLabel scoreLabel= new JLabel("Score: "+ score);
+    JLabel prossimoValore= new JLabel("Prossimo valore: ");
     int colonna = 6;
     int riga= 5;
     int[][] matrix = new int[colonna][riga];
     int counter = 0;
     LinkedList<Integer> list = new LinkedList<>();
-    int[][] matrixOrder = {{0, 2}, {3, 2}, {1, 4}, {2, 2}, {4, 4},
+   /* int[][] matrixOrder = {{0, 2}, {3, 2}, {1, 4}, {2, 2}, {4, 4},
             {1, 2}, {4, 4}, {0, 8},
             {0, 8}, {1, 32},
             {2, 2}, {2, 64}, {3, 16},
@@ -32,6 +33,11 @@ public class Game extends JFrame {
             {1, 2}, {2, 64}, {2, 32},
             {2, 16}, {2, 8}, {2, 8},
             {1, 4}, {1, 8}, {0, 0}};
+
+    */
+
+    Random random = new Random();
+
 
     void setMatrix(int[][] matrix) {
         this.matrix = matrix;
@@ -44,31 +50,38 @@ public class Game extends JFrame {
         setTitle("Drop Number dropNumber.Game");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         button.setVisible(true);
-        button.setBounds(500, 170, 100, 40);
+        button.setBounds(500, 190, 100, 40);
         setLayout(null);
         add(button);
         setVisible(true);
         setLocationRelativeTo(null);
 
         add(scoreLabel);
-        scoreLabel.setBounds(500, 100, 100, 40);
+        scoreLabel.setBounds(500, 120, 100, 40);
         scoreLabel.setVisible(true);
         scoreLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
         scoreLabel.setForeground(Color.black);
         scoreLabel.setBorder(new LineBorder(new Color(246, 103, 24), 1));
+
+        add(prossimoValore);
+        prossimoValore.setBounds(450, 20, 1000, 40);
+        prossimoValore.setVisible(true);
+        prossimoValore.setFont(new Font("SansSerif", Font.BOLD, 20));
     }
-    int GenereteBlock(){
+    int genereteBlock(){
         int[] possibleValues= {2, 4, 8, 16, 32};
-        Random valore = new Random();
-        return possibleValues[valore.nextInt(possibleValues.length)];
+        prossimoValore.setText("Prossimo valore: "+ possibleValues[random.nextInt(possibleValues.length)]);
+
+        return possibleValues[random.nextInt(possibleValues.length)];
     }
 
     public void actionPerformed(ActionEvent e) {
-        if (counter != 31) {
+        int value= genereteBlock();
+        /*if (counter != 31) {
             list.add(matrixOrder[counter][1], matrixOrder[counter][0]);
             /*score+=matrix[counter][1];
             scoreLabel.setText("Score: "+ score);*/
-            list.fillMatrix();
+            /*list.fillMatrix();
             list.sumTiles();
             counter++;
             setMatrix(list.getMatrix());
@@ -76,6 +89,35 @@ public class Game extends JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "dropNumber.Game has finished", "Warning", JOptionPane.WARNING_MESSAGE);
             button.setEnabled(false);
+        }*/
+        String colonnaStr = JOptionPane.showInputDialog(this, "inserire colonna: " );
+        int colonnaScelta= Integer.parseInt(colonnaStr);
+        for(int i = colonna-1; i>=0; i--){
+            if (matrix[i][colonnaScelta] == 0) {
+                matrix[i][colonnaScelta] = value;
+                score += value;
+                break;
+            }
+        }
+
+        scoreLabel.setText("Score: " + score);
+        //list.add(matrixOrder[counter][1], matrixOrder[counter][0]);
+
+        //list.fillMatrix();
+        //list.sumTiles();
+        //counter++;
+        //setMatrix(list.getMatrix());
+        repaint();
+        blockOnTop();
+    }
+    void blockOnTop(){
+        for(int i=0; i<riga; i++){
+            if(matrix[0][i]!=0){
+                JOptionPane.showMessageDialog(this, "Game Over", "Warning", JOptionPane.WARNING_MESSAGE);
+                button.setEnabled(false);
+                break;
+            }
+
         }
     }
 
