@@ -115,7 +115,7 @@ public class Game extends JFrame {
         blockOnTop();
         merge();
     }
-    void merge() {
+void merge() {
         for (int i = colonna - 1; i > 0; i--) {
             boolean merge=true;
             while (merge) {
