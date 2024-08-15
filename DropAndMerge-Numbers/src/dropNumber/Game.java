@@ -2,30 +2,24 @@ package dropNumber;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Arrays;
 import java.util.Random;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 
 public class Game extends JFrame {
-    JFrame frame = new JFrame();
-    JPanel panel = new JPanel();
+    //JFrame frame = new JFrame();
+    //JPanel panel = new JPanel();
     JButton button = new JButton("Inizio");
     int score=0;
-
     JTextArea scoreLabel= new JTextArea();
     JLabel prossimoValore= new JLabel("Prossimo valore: ");
-    int colonna = 6;
-    int riga= 5;
-    int[][] matrix = new int[colonna][riga];
+    int cols = 6;
+    int rows= 5;
+    int[][] matrix = new int[cols][rows];
     int counter = 4;
     //LinkedList<Integer> possibleValues = new LinkedList<>();
     int[] possibleValues = {2, 4, 8, 16, 32};
-
     int[] values= {2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072};
-
-
     Random random = new Random();
     int colonnaScelta=0;
 
@@ -37,7 +31,7 @@ public class Game extends JFrame {
     public Game() {
         getContentPane().setBackground(new Color (35,45,55,255));
         setSize(700, 500);
-        setTitle("Drop Number dropNumber.Game");
+        setTitle("DROP & MERGE NUMBERS");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         button.setVisible(true);
         button.setBounds(450, 190, 100, 40);
@@ -88,10 +82,10 @@ public class Game extends JFrame {
         String colonnaStr = JOptionPane.showInputDialog(this, "inserire colonna: " );
         //int colonnaScelta= Integer.parseInt(colonnaStr);
         colonnaScelta= Integer.parseInt(colonnaStr);
-        for(int i = colonna-1; i>=0; i--){
+        for(int i = cols -1; i>=0; i--){
             if (matrix[i][colonnaScelta] == 0) {
                 matrix[i][colonnaScelta] = value;
-                score += value;
+                //score += value;
                 break;
             }
         }
@@ -107,8 +101,47 @@ public class Game extends JFrame {
         blockOnTop();
         merge();
     }
-    void merge() {
-        for (int i = colonna - 1; i > 0; i--) {
+    void merge() { //TODO non funziona il caso in cui ho un tre blocchi ad angolo, fa il merge sotto e basta
+        System.out.println("colonna "+colonnaScelta);
+        boolean merge = true;
+        while (merge){
+            merge = false;
+            for(int i= cols - 1; i>=0; i--){
+                if(matrix[i][colonnaScelta]!=0){
+                    int valore = matrix[i][colonnaScelta];
+                    System.out.println("valore: "+ valore);
+                    if (i- 1 >=0 && matrix[i - 1][colonnaScelta]==valore){
+                        System.out.println("merge sinistro "+matrix[i][colonnaScelta]);
+                        matrix[i][colonnaScelta]*=2;
+                        matrix[i -1][colonnaScelta]=0;
+                        score+=valore*2;
+                        merge = true;
+                    }
+                    if (i + 1 < cols && matrix[i + 1][colonnaScelta]==valore){
+                        matrix[i][colonnaScelta]*=2;
+                        matrix[i + 1][colonnaScelta]=0;
+                        score+=valore*2;
+                        merge= true;
+                    }
+                    if (colonnaScelta-1 >= 0 && matrix[i][colonnaScelta - 1]==valore){
+                        matrix[i][colonnaScelta]*=2;
+                        matrix[i][colonnaScelta - 1]=0;
+                        score+=valore*2;
+                        merge= true;
+                    }
+                    if (colonnaScelta + 1 < rows && matrix[i][colonnaScelta+1] == valore){
+                        matrix[i][colonnaScelta]*=2;
+                        matrix[i][colonnaScelta + 1]=0;
+                        score+=valore*2;
+                        merge= true;
+                    }
+
+                }
+            }
+            collapseColumns();
+            scoreLabel.setText("Score: \n"+ score);
+        }
+        /*for (int i = cols - 1; i > 0; i--) {
             boolean merge=true;
             while (merge) {
                 merge = false;
@@ -129,7 +162,7 @@ public class Game extends JFrame {
                         merge=true;
                     }
 
-                    if (valore == matrix[i][colonnaScelta + 1] && colonnaScelta < colonna - 1) { //merge a destra
+                    if (valore == matrix[i][colonnaScelta + 1] && colonnaScelta < cols - 1) { //merge a destra
                         matrix[i][colonnaScelta] *= 2;
                         matrix[i][colonnaScelta + 1] = 0;
                         score += matrix[i][colonnaScelta];
@@ -141,9 +174,9 @@ public class Game extends JFrame {
             }
         }
         scoreLabel.setText("Score: \n" + score);
-        repaint();
+        repaint();*/
     }
-    void aggiorna(int nuovoValore){
+    void aggiorna(int nuovoValore){  //TODO da modificare il modo, non aggiuge appena scopre nuovo valore ma dopo un po che c'è
         if(nuovoValore>32){
             System.out.println("nuovo valore" + nuovoValore);
             for(int i=0; i<values.length; i++){
@@ -159,9 +192,9 @@ public class Game extends JFrame {
     }
 
 
-    void scendi(){
-        for(int i=colonna-1; i>0; i--){
-            for(int j=0; j<riga; j++){
+    void collapseColumns(){
+        for(int i=cols-1; i>0; i--){
+            for(int j=0; j<rows; j++){
                 if(matrix[i][j]==0){
                     matrix[i][j]=matrix[i-1][j];
                     matrix[i-1][j]=0;
@@ -172,7 +205,7 @@ public class Game extends JFrame {
 
 
     void blockOnTop(){
-        for(int i=0; i<riga; i++){
+        for(int i=0; i<rows; i++){
             if(matrix[0][i]!=0){
                 JOptionPane.showMessageDialog(this, "Game Over", "Warning", JOptionPane.WARNING_MESSAGE);
                 button.setEnabled(false);
@@ -186,8 +219,8 @@ public class Game extends JFrame {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setStroke(new BasicStroke(2));
         g2d.setColor(Color.white);
-        for (int i = 0; i < colonna; i++) {
-            for (int j = 0; j < riga; j++) {
+        for (int i = 0; i < cols; i++) {
+            for (int j = 0; j < rows; j++) {
                 g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);
             }
         }
@@ -196,8 +229,8 @@ public class Game extends JFrame {
 
     void fillMatrix(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
-        for (int i = 0; i < colonna; i++) {
-            for (int j = 0; j < riga; j++) {
+        for (int i = 0; i < cols; i++) {
+            for (int j = 0; j < rows ; j++) {
                 if (matrix[i][j] != 0) {
                     switch (matrix[i][j]) {
                         case 2:
