@@ -3,7 +3,12 @@ package dropNumber;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Random;
+import java.util.Scanner;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 
@@ -135,6 +140,7 @@ public class Game extends JFrame {
         blockOnTop();
         merge();
     }
+
     void merge() { //TODO non funziona il caso in cui ho un tre blocchi ad angolo, fa il merge sotto e basta
         System.out.println("colonna "+colonnaScelta);
         boolean merge = true;
