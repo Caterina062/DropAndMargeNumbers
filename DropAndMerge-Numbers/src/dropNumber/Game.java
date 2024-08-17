@@ -8,24 +8,23 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 
 public class Game extends JFrame {
-    //JFrame frame = new JFrame();
-    //JPanel panel = new JPanel();
     JButton button = new JButton("Inizio");
-    int score=0;
-    JTextArea scoreLabel= new JTextArea();
-    JLabel prossimoValore= new JLabel("Prossimo valore: ");
+    int score = 0;
+    JTextArea scoreLabel = new JTextArea();
+    JLabel prossimoValore = new JLabel("Prossimo valore: ");
+    JLabel countdownLabel = new JLabel();  // Nuova JLabel per il countdown
     int cols = 6;
-    int rows= 5;
+    int rows = 5;
     int[][] matrix = new int[cols][rows];
     int counter = 4;
-    //LinkedList<Integer> possibleValues = new LinkedList<>();
+    int countdownTime = 10;  // Variabile per il conto alla rovescia
     int[] possibleValues = {2, 4, 8, 16, 32};
-    int[] values= {2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072};
+    int[] values = {2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072};
     Random random = new Random();
-    int colonnaScelta=0;
-    int colonnaPrecedente= 2;
+    int colonnaScelta = 0;
+    int colonnaPrecedente = 2;
     Timer timer;
-
+    Timer countdownTimer;  // Nuovo timer per il conto alla rovescia
 
     void setMatrix(int[][] matrix) {
         this.matrix = matrix;
@@ -58,6 +57,12 @@ public class Game extends JFrame {
         prossimoValore.setForeground(Color.white);
         prossimoValore.setVisible(true);
         prossimoValore.setFont(new Font("SansSerif", Font.BOLD, 20));
+
+        add(countdownLabel);  // Aggiungi la countdownLabel al frame
+        countdownLabel.setBounds(450, 40, 200, 40);
+        countdownLabel.setForeground(Color.white);
+        countdownLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+
     }
     int genereteBlock(){
         //int[] possibleValues= {2, 4, 8, 16, 32};
@@ -66,29 +71,30 @@ public class Game extends JFrame {
         return valore;
     }
     public void actionPerformed(ActionEvent e) {
-        /*int value= genereteBlock();
-        String colonnaStr = JOptionPane.showInputDialog(this, "inserire colonna: " );
-        //int colonnaScelta= Integer.parseInt(colonnaStr);
-        colonnaScelta= Integer.parseInt(colonnaStr);
-        for(int i = cols -1; i>=0; i--){
-            if (matrix[i][colonnaScelta] == 0) {
-                matrix[i][colonnaScelta] = value;
-                //score += value;
-                break;
-            }
-        }
-        scoreLabel.setText("Score: \n"+ score);
-        repaint();
-        blockOnTop();
-        merge();*/
         int value = genereteBlock();
 
-        // Timer per far cadere automaticamente il blocco dopo 10 secondi
-        timer = new Timer(10000, new ActionListener() {
+        // Timer per il countdown da 10 a 1
+        countdownTime = 10;
+        countdownLabel.setText("Tempo rimanente: " + countdownTime);
+
+        countdownTimer = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Se il tempo scade, scegli una colonna random e posiziona il blocco
-                //colonnaScelta = random.nextInt(rows);  // scegli una colonna casuale
+                countdownTime--;
+                countdownLabel.setText("Tempo rimanente: " + countdownTime);
+                if (countdownTime <= 0) {
+                    countdownTimer.stop();
+                    timer.start();  // Avvia il timer per posizionare il blocco automaticamente
+                }
+            }
+        });
+
+        countdownTimer.start();
+
+        // Timer per far cadere automaticamente il blocco dopo il countdown
+        timer = new Timer(1000, new ActionListener() {  // Cambiato a 1000 ms per allinearsi col countdown
+            @Override
+            public void actionPerformed(ActionEvent e) {
                 colonnaScelta = colonnaPrecedente;
                 for (int i = cols - 1; i >= 0; i--) {
                     if (matrix[i][colonnaScelta] == 0) {
@@ -100,23 +106,22 @@ public class Game extends JFrame {
                 repaint();
                 blockOnTop();
                 merge();
-                timer.stop();  // Ferma il timer dopo che il blocco è stato posizionato automaticamente
+                timer.stop();
             }
         });
 
-        timer.setRepeats(false);  // Il timer non si ripete
-        timer.start();  // Avvia il timer
+        timer.setRepeats(false);
+        timer.setInitialDelay(countdownTime * 1000);  // Imposta il timer per iniziare dopo il countdown
+        timer.start();
 
-        // Chiedi all'utente di inserire la colonna
         String colonnaStr = JOptionPane.showInputDialog(this, "Inserire colonna: ");
 
-        // Se l'utente inserisce la colonna, ferma il timer
         if (colonnaStr != null) {
             colonnaScelta = Integer.parseInt(colonnaStr);
             colonnaPrecedente = colonnaScelta;
+            countdownTimer.stop();  // Ferma il countdown
             timer.stop();  // Ferma il timer dato che l'utente ha scelto la colonna
 
-            // Posiziona il blocco nella colonna scelta
             for (int i = cols - 1; i >= 0; i--) {
                 if (matrix[i][colonnaScelta] == 0) {
                     matrix[i][colonnaScelta] = value;
@@ -129,7 +134,6 @@ public class Game extends JFrame {
         repaint();
         blockOnTop();
         merge();
-
     }
     void merge() { //TODO non funziona il caso in cui ho un tre blocchi ad angolo, fa il merge sotto e basta
         System.out.println("colonna "+colonnaScelta);
