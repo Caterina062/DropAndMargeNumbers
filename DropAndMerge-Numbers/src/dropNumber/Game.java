@@ -2,6 +2,7 @@ package dropNumber;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Random;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -22,6 +23,8 @@ public class Game extends JFrame {
     int[] values= {2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072};
     Random random = new Random();
     int colonnaScelta=0;
+    int colonnaPrecedente= 2;
+    Timer timer;
 
 
     void setMatrix(int[][] matrix) {
@@ -62,23 +65,8 @@ public class Game extends JFrame {
         prossimoValore.setText("Prossimo valore: "+ valore);
         return valore;
     }
-
-
     public void actionPerformed(ActionEvent e) {
-        int value= genereteBlock();
-        /*if (counter != 31) {
-            list.add(matrixOrder[counter][1], matrixOrder[counter][0]);
-            /*score+=matrix[counter][1];
-            scoreLabel.setText("Score: "+ score);*/
-            /*list.fillMatrix();
-            list.sumTiles();
-            counter++;
-            setMatrix(list.getMatrix());
-            repaint();
-        } else {
-            JOptionPane.showMessageDialog(this, "dropNumber.Game has finished", "Warning", JOptionPane.WARNING_MESSAGE);
-            button.setEnabled(false);
-        }*/
+        /*int value= genereteBlock();
         String colonnaStr = JOptionPane.showInputDialog(this, "inserire colonna: " );
         //int colonnaScelta= Integer.parseInt(colonnaStr);
         colonnaScelta= Integer.parseInt(colonnaStr);
@@ -89,19 +77,60 @@ public class Game extends JFrame {
                 break;
             }
         }
-
         scoreLabel.setText("Score: \n"+ score);
-        //list.add(matrixOrder[counter][1], matrixOrder[counter][0]);
-        //list.fillMatrix();
-        //list.sumTiles();
-        //counter++;
-        //setMatrix(list.getMatrix());
+        repaint();
+        blockOnTop();
+        merge();*/
+        int value = genereteBlock();
 
+        // Timer per far cadere automaticamente il blocco dopo 10 secondi
+        timer = new Timer(10000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Se il tempo scade, scegli una colonna random e posiziona il blocco
+                //colonnaScelta = random.nextInt(rows);  // scegli una colonna casuale
+                colonnaScelta = colonnaPrecedente;
+                for (int i = cols - 1; i >= 0; i--) {
+                    if (matrix[i][colonnaScelta] == 0) {
+                        matrix[i][colonnaScelta] = value;
+                        break;
+                    }
+                }
+                scoreLabel.setText("Score: \n" + score);
+                repaint();
+                blockOnTop();
+                merge();
+                timer.stop();  // Ferma il timer dopo che il blocco è stato posizionato automaticamente
+            }
+        });
+
+        timer.setRepeats(false);  // Il timer non si ripete
+        timer.start();  // Avvia il timer
+
+        // Chiedi all'utente di inserire la colonna
+        String colonnaStr = JOptionPane.showInputDialog(this, "Inserire colonna: ");
+
+        // Se l'utente inserisce la colonna, ferma il timer
+        if (colonnaStr != null) {
+            colonnaScelta = Integer.parseInt(colonnaStr);
+            colonnaPrecedente = colonnaScelta;
+            timer.stop();  // Ferma il timer dato che l'utente ha scelto la colonna
+
+            // Posiziona il blocco nella colonna scelta
+            for (int i = cols - 1; i >= 0; i--) {
+                if (matrix[i][colonnaScelta] == 0) {
+                    matrix[i][colonnaScelta] = value;
+                    break;
+                }
+            }
+        }
+
+        scoreLabel.setText("Score: \n" + score);
         repaint();
         blockOnTop();
         merge();
-    }
 
+    }
     void merge() { //TODO non funziona il caso in cui ho un tre blocchi ad angolo, fa il merge sotto e basta
         System.out.println("colonna "+colonnaScelta);
         boolean merge = true;
@@ -145,7 +174,6 @@ public class Game extends JFrame {
                         score+=valore*2;
                         merge= true;
                     }
-
                 }
             }
             collapseColumns();
@@ -200,8 +228,6 @@ public class Game extends JFrame {
             }
         }
     }
-
-
     void collapseColumns(){
         for(int i=cols-1; i>0; i--){
             for(int j=0; j<rows; j++){
@@ -212,8 +238,6 @@ public class Game extends JFrame {
             }
         }
     }
-
-
     void blockOnTop(){
         for(int i=0; i<rows; i++){
             if(matrix[0][i]!=0){
@@ -221,10 +245,8 @@ public class Game extends JFrame {
                 button.setEnabled(false);
                 break;
             }
-
         }
     }
-
     void drawRectangles(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setStroke(new BasicStroke(2));
@@ -234,9 +256,7 @@ public class Game extends JFrame {
                 g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);
             }
         }
-
     }
-
     void fillMatrix(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
         for (int i = 0; i < cols; i++) {
@@ -379,31 +399,33 @@ public class Game extends JFrame {
                             g2d.setFont(new Font("SansSerif", Font.BOLD, 20));
                             g2d.drawString("131072", j * 50 + 160, i * 50 + 90);
                             break;
-
-
+                        case 262144:
+                            g2d.setColor(new Color(36, 63, 9));
+                            g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);
+                            g2d.fillRect(j * 50 + 150, i * 50 + 60, 50, 50);
+                            g2d.setColor(Color.black);
+                            g2d.setFont(new Font("SansSerif", Font.BOLD, 20));
+                            g2d.drawString("131072", j * 50 + 160, i * 50 + 90);
+                            break;
                     }
                 }
             }
         }
     }
-
     @Override
     public void paint(Graphics g) {
         super.paint(g);
         drawRectangles(g);
         fillMatrix(g);
     }
-
     public static void main(String[] args) {
         Game gFrame = new Game();
         gFrame.button.addActionListener(new java.awt.event.ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 gFrame.actionPerformed(e);
             }
         });
         gFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
     }
 }
