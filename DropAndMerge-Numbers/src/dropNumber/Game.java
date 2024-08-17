@@ -101,6 +101,7 @@ public class Game extends JFrame {
         blockOnTop();
         merge();
     }
+
     void merge() { //TODO non funziona il caso in cui ho un tre blocchi ad angolo, fa il merge sotto e basta
         System.out.println("colonna "+colonnaScelta);
         boolean merge = true;
@@ -110,28 +111,37 @@ public class Game extends JFrame {
                 if(matrix[i][colonnaScelta]!=0){
                     int valore = matrix[i][colonnaScelta];
                     System.out.println("valore: "+ valore);
-                    if (i- 1 >=0 && matrix[i - 1][colonnaScelta]==valore){
+                    if (colonnaScelta-1 >= 0 && matrix[i][colonnaScelta - 1]==valore){
                         System.out.println("merge sinistro "+matrix[i][colonnaScelta]);
+                        matrix[i][colonnaScelta]*=2;
+                        matrix[i][colonnaScelta - 1]=0;
+                        score+=valore*2;
+                        merge= true;
+                    }
+                    else{
+                        System.out.println("NO MERGE");
+                    }
+                    if (colonnaScelta + 1 < rows && matrix[i][colonnaScelta+1] == valore){
+                        System.out.println("merge destro "+matrix[i][colonnaScelta]);
+                        matrix[i][colonnaScelta]*=2;
+                        matrix[i][colonnaScelta + 1]=0;
+                        score+=valore*2;
+                        merge= true;
+                    }
+                    else{
+                        System.out.println("NO MERGE");
+                    }
+                    if (i- 1 >=0 && matrix[i - 1][colonnaScelta]==valore){
+                        System.out.println("merge sotto "+matrix[i][colonnaScelta]);
                         matrix[i][colonnaScelta]*=2;
                         matrix[i -1][colonnaScelta]=0;
                         score+=valore*2;
                         merge = true;
                     }
                     if (i + 1 < cols && matrix[i + 1][colonnaScelta]==valore){
+                        System.out.println("merge sopra "+matrix[i][colonnaScelta]);
                         matrix[i][colonnaScelta]*=2;
                         matrix[i + 1][colonnaScelta]=0;
-                        score+=valore*2;
-                        merge= true;
-                    }
-                    if (colonnaScelta-1 >= 0 && matrix[i][colonnaScelta - 1]==valore){
-                        matrix[i][colonnaScelta]*=2;
-                        matrix[i][colonnaScelta - 1]=0;
-                        score+=valore*2;
-                        merge= true;
-                    }
-                    if (colonnaScelta + 1 < rows && matrix[i][colonnaScelta+1] == valore){
-                        matrix[i][colonnaScelta]*=2;
-                        matrix[i][colonnaScelta + 1]=0;
                         score+=valore*2;
                         merge= true;
                     }
