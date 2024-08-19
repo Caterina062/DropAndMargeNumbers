@@ -3,12 +3,7 @@ package dropNumber;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Random;
-import java.util.Scanner;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 
@@ -95,7 +90,6 @@ public class Game extends JFrame {
         });
 
         countdownTimer.start();
-
         // Timer per far cadere automaticamente il blocco dopo il countdown
         timer = new Timer(1000, new ActionListener() {  // Cambiato a 1000 ms per allinearsi col countdown
             @Override
@@ -170,6 +164,11 @@ public class Game extends JFrame {
                     else{
                         System.out.println("NO MERGE");
                     }
+                }
+            }
+            for(int i= cols - 1; i>=0; i--){
+                if(matrix[i][colonnaScelta]!=0){
+                    int valore= matrix[i][colonnaScelta];
                     if (i- 1 >=0 && matrix[i - 1][colonnaScelta]==valore){
                         System.out.println("merge sotto "+matrix[i][colonnaScelta]);
                         matrix[i][colonnaScelta]*=2;
