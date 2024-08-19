@@ -137,6 +137,15 @@ public class Game extends JFrame {
         merge();
         blockOnTop();
     }
+    void stampa(){
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                System.out.print(matrix[i][j] + " ");
+            }
+            System.out.println();
+        }
+
+    }
 
     void merge() { //TODO non funziona il caso in cui ho un tre blocchi ad angolo, fa il merge sotto e basta
         System.out.println("colonna " + colonnaScelta);
@@ -153,6 +162,7 @@ public class Game extends JFrame {
                         matrix[i][colonnaScelta - 1] = 0;
                         attualScore += valore * 2;
                         merge = true;
+                        stampa();
                     }
                     if (colonnaScelta + 1 < cols && matrix[i][colonnaScelta + 1] == valore) {
                         System.out.println("merge destro " + matrix[i][colonnaScelta]);
@@ -161,15 +171,11 @@ public class Game extends JFrame {
                         attualScore += valore * 2;
                         merge = true;
                     }
-                    if (i - 1 >= 0 && matrix[i - 1][colonnaScelta] == valore) {
-                        System.out.println("merge sotto " + matrix[i][colonnaScelta]);
-                        matrix[i][colonnaScelta] *= 2;
-                        matrix[i - 1][colonnaScelta] = 0;
-                        attualScore += valore * 2;
-                        merge = true;
-                    }
+                   System.out.println(i+1);
+                    if(i+1<6){
+                    System.out.print(matrix[i+1][colonnaScelta]);}
                     if (i + 1 < rows && matrix[i + 1][colonnaScelta] == valore) {
-                        System.out.println("merge sopra " + matrix[i][colonnaScelta]);
+                        System.out.println("merge sotto " + matrix[i][colonnaScelta]);
                         matrix[i][colonnaScelta] *= 2;
                         matrix[i + 1][colonnaScelta] = 0;
                         attualScore += valore * 2;

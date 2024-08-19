@@ -20,18 +20,13 @@ public class SetScore {
         return highScore;
     }
 
-    public void updateScore(int score){
-        boolean inserted = false;
+    public void updateScore(int score){;
         for(int i = 0; i < highScore.size(); i++){
             if(score > Integer.parseInt(highScore.get(i))){
                 highScore.add(i, "" + score);
                 highScore.remove(highScore.size()-1);
-                inserted=true;
                 break;
             }
-        }
-        if (!inserted){
-            highScore.add("" + score);
         }
         writeScoresToFile();  // Riscrivi il file con i nuovi punteggi
     }
