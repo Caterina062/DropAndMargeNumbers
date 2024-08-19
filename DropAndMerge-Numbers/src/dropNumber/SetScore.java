@@ -5,18 +5,10 @@ import java.util.ArrayList;
 
 public class SetScore {
     private String fileName = "DropAndMerge-Numbers/score.txt";
+    public java.util.List<String> highScore = new ArrayList<>();
 
-    public void saveScore(String playerName, int score) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true))) {
-            writer.write(playerName + ":" + score);
-            writer.newLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     public java.util.List<String> getHighScores() {
-        java.util.List<String> highScore = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -26,5 +18,31 @@ public class SetScore {
             e.printStackTrace();
         }
         return highScore;
+    }
+
+    public void updateScore(int score){
+        boolean inserted = false;
+        for(int i = 0; i < highScore.size(); i++){
+            if(score > Integer.parseInt(highScore.get(i))){
+                highScore.add(i, "" + score);
+                highScore.remove(highScore.size()-1);
+                inserted=true;
+                break;
+            }
+        }
+        if (!inserted){
+            highScore.add("" + score);
+        }
+        writeScoresToFile();  // Riscrivi il file con i nuovi punteggi
+    }
+    private void writeScoresToFile() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+            for (String score : highScore) {
+                writer.write(score);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
