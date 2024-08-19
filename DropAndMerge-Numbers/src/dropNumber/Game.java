@@ -3,6 +3,8 @@ package dropNumber;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.Random;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -26,12 +28,16 @@ public class Game extends JFrame {
     Timer timer;
     Timer countdownTimer;  // Nuovo timer per il conto alla rovescia
 
+    ////////////////////////////////////////////
+
+
+
     void setMatrix(int[][] matrix) {
         this.matrix = matrix;
     }
 
     public Game() {
-        getContentPane().setBackground(new Color (35,45,55,255));
+        getContentPane().setBackground(new Color(35, 45, 55, 255));
         setSize(700, 500);
         setTitle("DROP & MERGE NUMBERS");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -47,8 +53,8 @@ public class Game extends JFrame {
         scoreLabel.setVisible(true);
         scoreLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
         scoreLabel.setForeground(Color.white);
-        scoreLabel.setBackground(new Color(35,45,55,255));
-        scoreLabel.setBorder(new LineBorder(new Color(24,115,120,255), 1));
+        scoreLabel.setBackground(new Color(35, 45, 55, 255));
+        scoreLabel.setBorder(new LineBorder(new Color(24, 115, 120, 255), 1));
         scoreLabel.setText("Score:\n" + score);
         scoreLabel.setEditable(false);
 
@@ -64,12 +70,16 @@ public class Game extends JFrame {
         countdownLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
 
     }
-    int genereteBlock(){
+
+
+    ////////////////////
+    int genereteBlock() {
         //int[] possibleValues= {2, 4, 8, 16, 32};
-        int valore= possibleValues[random.nextInt(possibleValues.length)];
-        prossimoValore.setText("Prossimo valore: "+ valore);
+        int valore = possibleValues[random.nextInt(possibleValues.length)];
+        prossimoValore.setText("Prossimo valore: " + valore);
         return valore;
     }
+
     public void actionPerformed(ActionEvent e) {
         int value = genereteBlock();
 
@@ -136,57 +146,55 @@ public class Game extends JFrame {
     }
 
     void merge() { //TODO non funziona il caso in cui ho un tre blocchi ad angolo, fa il merge sotto e basta
-        System.out.println("colonna "+colonnaScelta);
+        System.out.println("colonna " + colonnaScelta);
         boolean merge = true;
-        while (merge){
+        while (merge) {
             merge = false;
-            for(int i= cols - 1; i>=0; i--){
-                if(matrix[i][colonnaScelta]!=0){
+            for (int i = cols - 1; i >= 0; i--) {
+                if (matrix[i][colonnaScelta] != 0) {
                     int valore = matrix[i][colonnaScelta];
-                    System.out.println("valore: "+ valore);
-                    if (colonnaScelta-1 >= 0 && matrix[i][colonnaScelta - 1]==valore){
-                        System.out.println("merge sinistro "+matrix[i][colonnaScelta]);
-                        matrix[i][colonnaScelta]*=2;
-                        matrix[i][colonnaScelta - 1]=0;
-                        score+=valore*2;
-                        merge= true;
-                    }
-                    else{
+                    System.out.println("valore: " + valore);
+                    if (colonnaScelta - 1 >= 0 && matrix[i][colonnaScelta - 1] == valore) {
+                        System.out.println("merge sinistro " + matrix[i][colonnaScelta]);
+                        matrix[i][colonnaScelta] *= 2;
+                        matrix[i][colonnaScelta - 1] = 0;
+                        score += valore * 2;
+                        merge = true;
+                    } else {
                         System.out.println("NO MERGE");
                     }
-                    if (colonnaScelta + 1 < rows && matrix[i][colonnaScelta+1] == valore){
-                        System.out.println("merge destro "+matrix[i][colonnaScelta]);
-                        matrix[i][colonnaScelta]*=2;
-                        matrix[i][colonnaScelta + 1]=0;
-                        score+=valore*2;
-                        merge= true;
-                    }
-                    else{
+                    if (colonnaScelta + 1 < rows && matrix[i][colonnaScelta + 1] == valore) {
+                        System.out.println("merge destro " + matrix[i][colonnaScelta]);
+                        matrix[i][colonnaScelta] *= 2;
+                        matrix[i][colonnaScelta + 1] = 0;
+                        score += valore * 2;
+                        merge = true;
+                    } else {
                         System.out.println("NO MERGE");
                     }
                 }
             }
-            for(int i= cols - 1; i>=0; i--){
-                if(matrix[i][colonnaScelta]!=0){
-                    int valore= matrix[i][colonnaScelta];
-                    if (i- 1 >=0 && matrix[i - 1][colonnaScelta]==valore){
-                        System.out.println("merge sotto "+matrix[i][colonnaScelta]);
-                        matrix[i][colonnaScelta]*=2;
-                        matrix[i -1][colonnaScelta]=0;
-                        score+=valore*2;
+            for (int i = cols - 1; i >= 0; i--) {
+                if (matrix[i][colonnaScelta] != 0) {
+                    int valore = matrix[i][colonnaScelta];
+                    if (i - 1 >= 0 && matrix[i - 1][colonnaScelta] == valore) {
+                        System.out.println("merge sotto " + matrix[i][colonnaScelta]);
+                        matrix[i][colonnaScelta] *= 2;
+                        matrix[i - 1][colonnaScelta] = 0;
+                        score += valore * 2;
                         merge = true;
                     }
-                    if (i + 1 < cols && matrix[i + 1][colonnaScelta]==valore){
-                        System.out.println("merge sopra "+matrix[i][colonnaScelta]);
-                        matrix[i][colonnaScelta]*=2;
-                        matrix[i + 1][colonnaScelta]=0;
-                        score+=valore*2;
-                        merge= true;
+                    if (i + 1 < cols && matrix[i + 1][colonnaScelta] == valore) {
+                        System.out.println("merge sopra " + matrix[i][colonnaScelta]);
+                        matrix[i][colonnaScelta] *= 2;
+                        matrix[i + 1][colonnaScelta] = 0;
+                        score += valore * 2;
+                        merge = true;
                     }
                 }
             }
             collapseColumns();
-            scoreLabel.setText("Score: \n"+ score);
+            scoreLabel.setText("Score: \n" + score);
         }
         /*for (int i = cols - 1; i > 0; i--) {
             boolean merge=true;
@@ -223,39 +231,43 @@ public class Game extends JFrame {
         scoreLabel.setText("Score: \n" + score);
         repaint();*/
     }
-    void aggiorna(int nuovoValore){  //TODO da modificare il modo, non aggiuge appena scopre nuovo valore ma dopo un po che c'è
-        if(nuovoValore>32){
+
+    void aggiorna(int nuovoValore) {  //TODO da modificare il modo, non aggiuge appena scopre nuovo valore ma dopo un po che c'è
+        if (nuovoValore > 32) {
             System.out.println("nuovo valore" + nuovoValore);
-            for(int i=0; i<values.length; i++){
-                if (values[i] <= nuovoValore){
-                    counter+=1;
+            for (int i = 0; i < values.length; i++) {
+                if (values[i] <= nuovoValore) {
+                    counter += 1;
                 }
             }
-            possibleValues= new int[counter];
-            for(int i=0; i<counter; i++){
-                possibleValues[i]= values[i];
+            possibleValues = new int[counter];
+            for (int i = 0; i < counter; i++) {
+                possibleValues[i] = values[i];
             }
         }
     }
-    void collapseColumns(){
-        for(int i=cols-1; i>0; i--){
-            for(int j=0; j<rows; j++){
-                if(matrix[i][j]==0){
-                    matrix[i][j]=matrix[i-1][j];
-                    matrix[i-1][j]=0;
+
+    void collapseColumns() {
+        for (int i = cols - 1; i > 0; i--) {
+            for (int j = 0; j < rows; j++) {
+                if (matrix[i][j] == 0) {
+                    matrix[i][j] = matrix[i - 1][j];
+                    matrix[i - 1][j] = 0;
                 }
             }
         }
     }
-    void blockOnTop(){
-        for(int i=0; i<rows; i++){
-            if(matrix[0][i]!=0){
+
+    void blockOnTop() {
+        for (int i = 0; i < rows; i++) {
+            if (matrix[0][i] != 0) {
                 JOptionPane.showMessageDialog(this, "Game Over", "Warning", JOptionPane.WARNING_MESSAGE);
                 button.setEnabled(false);
                 break;
             }
         }
     }
+
     void drawRectangles(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setStroke(new BasicStroke(2));
@@ -266,14 +278,15 @@ public class Game extends JFrame {
             }
         }
     }
+
     void fillMatrix(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
         for (int i = 0; i < cols; i++) {
-            for (int j = 0; j < rows ; j++) {
+            for (int j = 0; j < rows; j++) {
                 if (matrix[i][j] != 0) {
                     switch (matrix[i][j]) {
                         case 2:
-                            g2d.setColor(new Color(222,107,145,255));
+                            g2d.setColor(new Color(222, 107, 145, 255));
                             g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);
                             g2d.fillRect(j * 50 + 150, i * 50 + 60, 50, 50);
                             g2d.setColor(Color.black);
@@ -281,7 +294,7 @@ public class Game extends JFrame {
                             g2d.drawString("2", j * 50 + 170, i * 50 + 90);
                             break;
                         case 4:
-                            g2d.setColor(new Color(4,198,82));
+                            g2d.setColor(new Color(4, 198, 82));
                             g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);
                             g2d.fillRect(j * 50 + 150, i * 50 + 60, 50, 50);
                             g2d.setColor(Color.black);
@@ -297,7 +310,7 @@ public class Game extends JFrame {
                             g2d.drawString("8", j * 50 + 170, i * 50 + 90);
                             break;
                         case 16:
-                            g2d.setColor(new Color(0,146,234,255));
+                            g2d.setColor(new Color(0, 146, 234, 255));
                             g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);
                             g2d.fillRect(j * 50 + 150, i * 50 + 60, 50, 50);
                             g2d.setColor(Color.black);
@@ -305,7 +318,7 @@ public class Game extends JFrame {
                             g2d.drawString("16", j * 50 + 170, i * 50 + 90);
                             break;
                         case 32:
-                            g2d.setColor(new Color(255,109,0,255));
+                            g2d.setColor(new Color(255, 109, 0, 255));
                             g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);
                             g2d.fillRect(j * 50 + 150, i * 50 + 60, 50, 50);
                             g2d.setColor(Color.black);
@@ -313,7 +326,7 @@ public class Game extends JFrame {
                             g2d.drawString("32", j * 50 + 165, i * 50 + 90);
                             break;
                         case 64:
-                            g2d.setColor(new Color(117,80,245,255));
+                            g2d.setColor(new Color(117, 80, 245, 255));
                             g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);
                             g2d.fillRect(j * 50 + 150, i * 50 + 60, 50, 50);
                             g2d.setColor(Color.black);
@@ -321,7 +334,7 @@ public class Game extends JFrame {
                             g2d.drawString("64", j * 50 + 165, i * 50 + 90);
                             break;
                         case 128:
-                            g2d.setColor(new Color(116,87,73,255));
+                            g2d.setColor(new Color(116, 87, 73, 255));
                             g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);
                             g2d.fillRect(j * 50 + 150, i * 50 + 60, 50, 50);
                             g2d.setColor(Color.black);
@@ -420,6 +433,9 @@ public class Game extends JFrame {
                 }
             }
         }
+
+
+        ////////////////////////////////////////////
     }
     @Override
     public void paint(Graphics g) {
@@ -428,6 +444,17 @@ public class Game extends JFrame {
         fillMatrix(g);
     }
     public static void main(String[] args) {
+
+        SetScore setScore = new SetScore();
+        setScore.saveScore("1. ", 100);
+        setScore.saveScore("2. ", 200);
+        setScore.saveScore("3. ", 300);
+        java.util.List<String> scores = setScore.getHighScores();
+        for(String score : scores){
+            System.out.println(score);
+        }
+
+
         Game gFrame = new Game();
         gFrame.button.addActionListener(new java.awt.event.ActionListener() {
             @Override
