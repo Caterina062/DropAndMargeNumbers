@@ -1,10 +1,10 @@
-package dropNumber;
+package org.example;
 
 import java.io.*;
 import java.util.ArrayList;
 
 public class SetScore {
-    private String fileName = "DropAndMerge-Numbers/score.txt";
+    private String fileName = "DropAndMerge/src/main/java/score.txt";
     public java.util.List<String> highScore = new ArrayList<>();
 
 

@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/DropAndMargeNumbers.iml" filepath="$PROJECT_DIR$/.idea/DropAndMargeNumbers.iml" />
-      <module fileurl="file://$PROJECT_DIR$/DropAndMerge-Numbers/DropAndMerge-Numbers.iml" filepath="$PROJECT_DIR$/DropAndMerge-Numbers/DropAndMerge-Numbers.iml" />
     </modules>
   </component>
 </project>

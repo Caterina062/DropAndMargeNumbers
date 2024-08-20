@@ -1,4 +1,4 @@
-package dropNumber;
+package org.example;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.util.Random;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
+
 
 public class Game extends JFrame {
     JButton button = new JButton("Inizio");
@@ -171,9 +172,9 @@ public class Game extends JFrame {
                         attualScore += valore * 2;
                         merge = true;
                     }
-                   System.out.println(i+1);
+                    System.out.println(i+1);
                     if(i+1<6){
-                    System.out.print(matrix[i+1][colonnaScelta]);}
+                        System.out.print(matrix[i+1][colonnaScelta]);}
                     if (i + 1 < rows && matrix[i + 1][colonnaScelta] == valore) {
                         System.out.println("merge sotto " + matrix[i][colonnaScelta]);
                         matrix[i][colonnaScelta] *= 2;
@@ -435,17 +436,11 @@ public class Game extends JFrame {
     }
     public static void main(String[] args) {
 
-
-        //SetScore getScoreInstance = new SetScore();
-        //setScore.saveScore("1. ", 100);
-        //setScore.saveScore("2. ", 200);
-        //setScore.saveScore("3. ", 300);
+        SetScore getScoreInstance = new SetScore();
         java.util.List<String> scores = setScore.getHighScores();
         for(String score : scores){
             System.out.println(score);
         }
-
-
         Game gFrame = new Game();
         gFrame.button.addActionListener(new java.awt.event.ActionListener() {
             @Override

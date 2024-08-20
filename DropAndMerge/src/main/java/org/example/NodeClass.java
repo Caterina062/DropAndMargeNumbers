@@ -1,5 +1,5 @@
 
-package dropNumber;
+package org.example;
 
 public class NodeClass<T extends Number> {
     NodeClass up;
