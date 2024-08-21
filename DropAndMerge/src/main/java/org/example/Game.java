@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.Random;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -28,6 +29,7 @@ public class Game extends JFrame {
     int[][] matrix = new int[rows][cols];
     int counter = 4;
     int countdownTime = 10;  // Variabile per il conto alla rovescia
+    //LinkedList<Integer> possibleValues= new LinkedList<Integer>();
     int[] possibleValues = {2, 4, 8, 16, 32};
     int[] values = {2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072};
     Random random = new Random();
@@ -194,23 +196,30 @@ public class Game extends JFrame {
                     }
                 }
             }
+            updateValues();
             collapseColumns();
             scoreLabel.setText("Score: \n" + attualScore);
         }
     }
 
-    void aggiorna(int nuovoValore) {  //TODO da modificare il modo, non aggiuge appena scopre nuovo valore ma dopo un po che c'è
-        if (nuovoValore > 32) {
-            System.out.println("nuovo valore" + nuovoValore);
-            for (int i = 0; i < values.length; i++) {
-                if (values[i] <= nuovoValore) {
-                    counter += 1;
+    void updateValues() {
+        int counter=0;
+        LinkedList<Integer> ValueBlock = new LinkedList<>();
+        for(int i=0; i<rows-1; i++){
+            for(int j=0; j<cols; j++){
+                if(matrix[i][j]>possibleValues[possibleValues.length-1]){
+                    counter+=1;
                 }
             }
-            possibleValues = new int[counter];
-            for (int i = 0; i < counter; i++) {
-                possibleValues[i] = values[i];
-            }
+        }
+        if(counter>=2) {
+            int [] newPossibleValues= new int[possibleValues.length+1];
+            System.arraycopy(possibleValues, 0, newPossibleValues, 0, possibleValues.length);
+            newPossibleValues[newPossibleValues.length-1]=values[newPossibleValues.length-1];
+            possibleValues=newPossibleValues;
+        }
+        for(int i=0; i<possibleValues.length; i++){
+            System.out.println(possibleValues[i]);
         }
     }
 
