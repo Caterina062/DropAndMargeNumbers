@@ -1,12 +1,22 @@
 package org.example;
 
+import it.unical.mat.embasp.base.Output;
+import it.unical.mat.embasp.languages.IllegalAnnotationException;
+import it.unical.mat.embasp.languages.ObjectNotValidException;
+import it.unical.mat.embasp.languages.asp.ASPMapper;
+import it.unical.mat.embasp.languages.asp.AnswerSet;
+import it.unical.mat.embasp.languages.asp.AnswerSets;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Random;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
-
 
 public class Game extends JFrame {
     JButton button = new JButton("Inizio");
@@ -27,6 +37,7 @@ public class Game extends JFrame {
     Timer timer;
     Timer countdownTimer;  // Nuovo timer per il conto alla rovescia
     static SetScore setScore = new SetScore();
+    int value;
 
     void setMatrix(int[][] matrix) {
         this.matrix = matrix;
@@ -74,8 +85,10 @@ public class Game extends JFrame {
         return valore;
     }
 
-    public void actionPerformed(ActionEvent e) {
-        int value = genereteBlock();
+    public void actionPerformed(ActionEvent e) throws Exception {
+        value = genereteBlock();
+        passInputToOracle("DropAndMerge/encoding.asp");
+
 
         // Timer per il countdown da 10 a 1
         countdownTime = 10;
@@ -117,19 +130,16 @@ public class Game extends JFrame {
         timer.setInitialDelay(countdownTime * 1000);  // Imposta il timer per iniziare dopo il countdown
         timer.start();
 
-        String colonnaStr = JOptionPane.showInputDialog(this, "Inserire colonna: ");
 
-        if (colonnaStr != null) {
-            colonnaScelta = Integer.parseInt(colonnaStr);
-            colonnaPrecedente = colonnaScelta;
-            countdownTimer.stop();  // Ferma il countdown
-            timer.stop();  // Ferma il timer dato che l'utente ha scelto la colonna
+        colonnaScelta = getOutputFromOracle();
+        colonnaPrecedente = colonnaScelta;
+        countdownTimer.stop();  // Ferma il countdown
+        timer.stop();  // Ferma il timer dato che l'utente ha scelto la colonna
 
-            for (int i = rows - 1; i >= 0; i--) {
-                if (matrix[i][colonnaScelta] == 0) {
-                    matrix[i][colonnaScelta] = value;
-                    break;
-                }
+        for (int i = rows - 1; i >= 0; i--) {
+            if (matrix[i][colonnaScelta] == 0) {
+                matrix[i][colonnaScelta] = value;
+                break;
             }
         }
 
@@ -140,6 +150,7 @@ public class Game extends JFrame {
     }
     void stampa(){
         for (int i = 0; i < rows; i++) {
+            System.out.println("indice riga: "+i);
             for (int j = 0; j < cols; j++) {
                 System.out.print(matrix[i][j] + " ");
             }
@@ -187,40 +198,6 @@ public class Game extends JFrame {
             collapseColumns();
             scoreLabel.setText("Score: \n" + attualScore);
         }
-        /*for (int i = cols - 1; i > 0; i--) {
-            boolean merge=true;
-            while (merge) {
-                merge = false;
-                if (matrix[i][colonnaScelta] != 0) {
-                    int valore = matrix[i][colonnaScelta];
-
-                    if (valore == matrix[i - 1][colonnaScelta]) {  //merge sotto
-                        matrix[i][colonnaScelta] *= 2;  // Unisci i blocchi
-                        matrix[i - 1][colonnaScelta] = 0; // Rendi la casella sopra vuota
-                        score += matrix[i][colonnaScelta];  // Aggiorna il punteggio
-                        merge=true;
-                    }
-
-                    if (valore == matrix[i][colonnaScelta - 1] && colonnaScelta != 0) { //merge a sinistra
-                        matrix[i][colonnaScelta] *= 2;
-                        matrix[i][colonnaScelta - 1] = 0;
-                        score += matrix[i][colonnaScelta];
-                        merge=true;
-                    }
-
-                    if (valore == matrix[i][colonnaScelta + 1] && colonnaScelta < cols - 1) { //merge a destra
-                        matrix[i][colonnaScelta] *= 2;
-                        matrix[i][colonnaScelta + 1] = 0;
-                        score += matrix[i][colonnaScelta];
-                        merge=true;
-                    }
-                    scendi();
-                    aggiorna(matrix[i][colonnaScelta]);
-                }
-            }
-        }
-        scoreLabel.setText("Score: \n" + score);
-        repaint();*/
     }
 
     void aggiorna(int nuovoValore) {  //TODO da modificare il modo, non aggiuge appena scopre nuovo valore ma dopo un po che c'è
@@ -428,6 +405,72 @@ public class Game extends JFrame {
             }
         }
     }
+    /////////////////////////////////////
+    private String readEncoding(String filePath) { //metodo per leggere un file
+        String encoding = "";
+        try {
+            FileReader fileReader = new FileReader(filePath);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                encoding += line + "\n";
+            }
+
+            bufferedReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return encoding;
+    }
+
+    private void passInputToOracle(String filePath) throws Exception {
+        String encoding = readEncoding(filePath); //legge il file di encoding
+        EmbASPManager.getInstance().getProgram().addProgram(encoding);
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                EmbASPManager.getInstance().getProgram().addProgram("cell(" + i + "," + j + "," + matrix[i][j] + ").");
+            }
+        }
+        EmbASPManager.getInstance().getProgram().addProgram("block(" + value + ").");
+
+        System.out.println(EmbASPManager.getInstance().getProgram().getPrograms());
+        EmbASPManager.getInstance().getHandler().addProgram(EmbASPManager.getInstance().getProgram());
+    }
+
+
+    private int getOutputFromOracle() throws ObjectNotValidException, IllegalAnnotationException {
+        // GET OUTPUT
+        Output output = EmbASPManager.getInstance().getHandler().startSync(); //avvia dlv
+        ASPMapper.getInstance().registerClass(Move.class);
+
+        int result = -1;
+        AnswerSets answersets = (AnswerSets) output; //risultato di ASP
+        for(AnswerSet a: answersets.getAnswersets()) {
+            System.out.println(a.toString());
+            //trova move nell'answersets
+            try {
+                for(int i=0; i<a.toString().length(); i++){
+                    if(a.toString().charAt(i)=='m' && a.toString().charAt(i+1)=='o' && a.toString().charAt(i+2)=='v' && a.toString().charAt(i+3)=='e'){
+                        System.out.println("trovato move");
+                        result = Integer.parseInt(a.toString().charAt(i+5)+"");
+                        break;
+                    }
+                }
+                /*for (Object obj : a.getAtoms()) {
+                    if (!(obj instanceof Move)) continue; //se non è un Move
+                    Move move = (Move) obj;
+                    result=move.getCol();
+                    break;
+                }*/
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            //Only the first answerSet is needed
+            break;
+        }
+        return result;
+    }
     @Override
     public void paint(Graphics g) {
         super.paint(g);
@@ -442,10 +485,15 @@ public class Game extends JFrame {
             System.out.println(score);
         }
         Game gFrame = new Game();
+
         gFrame.button.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                gFrame.actionPerformed(e);
+                try {
+                    gFrame.actionPerformed(e);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
             }
 
         });
