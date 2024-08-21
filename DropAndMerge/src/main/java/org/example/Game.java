@@ -413,7 +413,7 @@ public class Game extends JFrame {
             }
         }
     }
-    /////////////////////////////////////
+
     private String readEncoding(String filePath) { //metodo per leggere un file
         String encoding = "";
         try {
