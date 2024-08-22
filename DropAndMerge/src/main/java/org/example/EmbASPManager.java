@@ -12,12 +12,14 @@ public class EmbASPManager {
     private static EmbASPManager instance;
     private Handler handler;
     private InputProgram program;
+    private DesktopService service;
+    private OptionDescriptor option;
 
 
     private EmbASPManager() {//costruttore privato
-        DesktopService service = new DLV2DesktopService("DropAndMerge/lib/dlv2.exe");
+        service = new DLV2DesktopService("DropAndMerge/lib/dlv2.exe");
         handler = new DesktopHandler(service);
-        OptionDescriptor option = new OptionDescriptor("-n 1");
+        option = new OptionDescriptor("-n 1");
         handler.addOption(option);
         program = new ASPInputProgram();
     }
@@ -36,6 +38,11 @@ public class EmbASPManager {
     public InputProgram getProgram() {
         return program;
     }
-
+    public void reset(){
+        handler.removeAll();
+        handler=new DesktopHandler(service);
+        handler.addOption(option);
+        program= new ASPInputProgram();
+    }
 
 }

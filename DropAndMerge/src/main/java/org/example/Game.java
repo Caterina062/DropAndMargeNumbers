@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
 import javax.swing.*;
@@ -440,6 +441,7 @@ public class Game extends JFrame {
                 EmbASPManager.getInstance().getProgram().addProgram("cell(" + i + "," + j + "," + matrix[i][j] + ").");
             }
         }
+
         EmbASPManager.getInstance().getProgram().addProgram("block(" + value + ").");
 
         System.out.println(EmbASPManager.getInstance().getProgram().getPrograms());
@@ -454,31 +456,32 @@ public class Game extends JFrame {
 
         int result = -1;
         AnswerSets answersets = (AnswerSets) output; //risultato di ASP
-        for(AnswerSet a: answersets.getAnswersets()) {
+        for(AnswerSet a: answersets.getOptimalAnswerSets()) {
             System.out.println(a.toString());
             //trova move nell'answersets
             try {
-                for(int i=0; i<a.toString().length(); i++){
-                    if(a.toString().charAt(i)=='m' && a.toString().charAt(i+1)=='o' && a.toString().charAt(i+2)=='v' && a.toString().charAt(i+3)=='e'){
-                        System.out.println("trovato move");
-                        result = Integer.parseInt(a.toString().charAt(i+5)+"");
-                        break;
+                for (Object obj : a.getAtoms()) {
+                    if (!(obj instanceof Move)){
+                        continue; //se non è un Move
                     }
-                }
-                /*for (Object obj : a.getAtoms()) {
-                    if (!(obj instanceof Move)) continue; //se non è un Move
                     Move move = (Move) obj;
                     result=move.getCol();
                     break;
-                }*/
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
             //Only the first answerSet is needed
             break;
         }
+        EmbASPManager.getInstance().reset();
+        if(result==-1){ //se non ha generato nessuna mossa
+            System.out.println("colonna precedente: " + colonnaPrecedente);
+            result=colonnaPrecedente;
+        }
         return result;
     }
+
     @Override
     public void paint(Graphics g) {
         super.paint(g);

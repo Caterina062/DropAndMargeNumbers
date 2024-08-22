@@ -8,6 +8,8 @@ public class Move {
     @Param(0)
     private int col; // id_factory1
 
+    public Move(){};
+
     public Move(int col) {
         this.col = col;
     }
