@@ -11,6 +11,7 @@
 move(X)|noMove(X):-cell(_,X,_).
 :-move(X), cell(1,X,N), N>0.
 
+%valore del blocco nella riga più bassa
 bloccoSotto(N):-sotto(MIN),move(X), cell(MIN,X,N), N>0.
 
 %trovare l'indice riga blocco sotto
@@ -25,5 +26,15 @@ vuoto:-#count{X:move(X)}=0.
 %non generare due mosse diverse
 :-move(X), move(Y), X!=Y.
 
-:~block(X), bloccoSotto(Y),X>Y. [X-Y@2, X, Y]
+%il blocco che cade ha valore maggiore del blocco sotto (livello tre perché meglio cadere su quelli più grandi)
+:~block(X), bloccoSotto(Y),X>Y. [X-Y@3, X, Y]
+
+%il blocco che cade ha valore minore del blocco sotto
 :~block(X), bloccoSotto(Y),Y>X. [Y-X@2, X, Y]
+
+%se non ho la possibilità di far cadere un blocco su un altro con lo stesso valore allora posso metterlo vicino, soprattutto se sopra quello è spagliato
+%non so se funzionano :(
+:-blocco(X), bloccoSotto(Y), cell(R,C,Y), cell(R,C1,M), X=M, C=C1+1.
+:-blocco(X), bloccoSotto(Y), cell(R,C,Y), cell(R,C1,M), X=M, C=C1-1.
+
+

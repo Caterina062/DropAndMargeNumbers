@@ -13,7 +13,6 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
 import javax.swing.*;
@@ -21,14 +20,15 @@ import javax.swing.border.LineBorder;
 
 public class Game extends JFrame {
     JButton button = new JButton("Inizio");
+    JButton inizioPartita = new JButton("Nuova Partita");
     int attualScore = 0;
     JTextArea scoreLabel = new JTextArea();
-    JLabel prossimoValore = new JLabel("Prossimo valore: ");
+    JLabel prossimoValore = new JLabel();
     JLabel countdownLabel = new JLabel();  // Nuova JLabel per il countdown
     int rows = 6;
     int cols = 5;
     int[][] matrix = new int[rows][cols];
-    int counter = 4;
+    //int counter = 4;
     int countdownTime = 10;  // Variabile per il conto alla rovescia
     //LinkedList<Integer> possibleValues= new LinkedList<Integer>();
     int[] possibleValues = {2, 4, 8, 16, 32};
@@ -41,13 +41,16 @@ public class Game extends JFrame {
     static SetScore setScore = new SetScore();
     int value;
 
+    ///
+    JTextArea finalScore = new JTextArea();
+
     void setMatrix(int[][] matrix) {
         this.matrix = matrix;
     }
 
     public Game() {
         getContentPane().setBackground(new Color(35, 45, 55, 255));
-        setSize(700, 500);
+        setSize(730, 510);
         setTitle("DROP & MERGE NUMBERS");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         button.setVisible(true);
@@ -72,23 +75,38 @@ public class Game extends JFrame {
         prossimoValore.setForeground(Color.white);
         prossimoValore.setVisible(true);
         prossimoValore.setFont(new Font("SansSerif", Font.BOLD, 20));
+        prossimoValore.setText("Prossimo valore: " + genereteBlock());
+
 
         add(countdownLabel);  // Aggiungi la countdownLabel al frame
         countdownLabel.setBounds(450, 40, 200, 40);
         countdownLabel.setForeground(Color.white);
         countdownLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
 
+        /////////////////////
+        add(finalScore);
+        finalScore.setEditable(false);
+        finalScore.setBounds(450, 100, 400, 200);
+        finalScore.setVisible(false);
+        finalScore.setFont(new Font("SansSerif", Font.BOLD, 20));
+        finalScore.setForeground(Color.white);
+        finalScore.setBackground(new Color(35, 45, 55, 255));
+
+        add(inizioPartita);
+        inizioPartita.setVisible(false);
+        inizioPartita.setBounds(450, 350, 200, 40);
+
     }
 
-    int genereteBlock() {
+    int genereteBlock() {  //TODO il valore del blocco deve comparire prima che il blocco cade e non dopo che l'ho già messo
         //int[] possibleValues= {2, 4, 8, 16, 32};
         int valore = possibleValues[random.nextInt(possibleValues.length)];
-        prossimoValore.setText("Prossimo valore: " + valore);
+        //prossimoValore.setText("Prossimo valore: " + valore);
         return valore;
     }
 
     public void actionPerformed(ActionEvent e) throws Exception {
-        value = genereteBlock();
+        //value = genereteBlock();
         passInputToOracle("DropAndMerge/encoding.asp");
 
 
@@ -161,7 +179,7 @@ public class Game extends JFrame {
 
     }
 
-    void merge() { //TODO non funziona il caso in cui ho un tre blocchi ad angolo, fa il merge sotto e basta
+    void merge() {
         System.out.println("colonna " + colonnaScelta);
         boolean merge = true;
         while (merge) {
@@ -194,6 +212,34 @@ public class Game extends JFrame {
                         matrix[i + 1][colonnaScelta] = 0;
                         attualScore += valore * 2;
                         merge = true;
+                    }
+                }
+            }
+            //nel faccio per sicurezza u merge generale per risolvere il problema del nonMerge dei blocchi che si uniscono su colonne diverse da quelle in cui cade l'ultimo blocco
+            if (merge == false) {
+                for (int i = rows - 1; i >= 0; i--) {
+                    for (int j = 0; j < cols; j++) {
+                        if (matrix[i][j] != 0) {
+                            int valore = matrix[i][j];
+                            if (j - 1 >= 0 && matrix[i][j - 1] == valore) {
+                                matrix[i][j] *= 2;
+                                matrix[i][j - 1] = 0;
+                                attualScore += valore * 2;
+                                merge = true;
+                            }
+                            if (j + 1 < cols && matrix[i][j + 1] == valore) {
+                                matrix[i][j] *= 2;
+                                matrix[i][j + 1] = 0;
+                                attualScore += valore * 2;
+                                merge = true;
+                            }
+                            if (i + 1 < rows && matrix[i + 1][j] == valore) {
+                                matrix[i][j] *= 2;
+                                matrix[i + 1][j] = 0;
+                                attualScore += valore * 2;
+                                merge = true;
+                            }
+                        }
                     }
                 }
             }
@@ -243,9 +289,59 @@ public class Game extends JFrame {
                 setScore.updateScore(attualScore);
                 countdownTimer.stop();
                 timer.stop();
+                //per mostrare i migliori punteggi
+                showScore();
                 break;
             }
         }
+    }
+    void showScore(){
+        button.setVisible(false);
+        scoreLabel.setVisible(false);
+        prossimoValore.setVisible(false);
+        countdownLabel.setVisible(false);
+
+        inizioPartita.setVisible(true);
+
+        //il bottone inizioPartita chiama il metodo nuovaPartita
+        inizioPartita.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                nuovaPartita(e);
+            }
+        });
+
+
+        finalScore.setVisible(true);
+        finalScore.setText("Youre Score: " + attualScore + "\n"+"\n Best Scores: \n"+"1. "+ setScore.getHighScores().get(0)+
+                "\n"+ "2. "+ setScore.getHighScores().get(1)+ "\n"+ "3. "+ setScore.getHighScores().get(2));
+
+    }
+
+    void nuovaPartita(ActionEvent e){
+        finalScore.setVisible(false);
+        inizioPartita.setVisible(false);
+        button.setVisible(true);
+        button.setEnabled(true);
+        scoreLabel.setVisible(true);
+        prossimoValore.setVisible(true);
+        countdownLabel.setVisible(true);
+        attualScore=0;
+        possibleValues = new int[]{2, 4, 8, 16, 32};
+        //richiamare la matrice da disegnare da zero
+        for(int i=0; i<rows; i++){
+            for(int j=0; j<cols; j++){
+                matrix[i][j]=0;
+            }
+        }
+        scoreLabel.setText("Score: \n" + attualScore);
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                matrix[i][j] = 0;
+            }
+        }
+
+        repaint();
     }
 
     void drawRectangles(Graphics g) {
@@ -254,7 +350,7 @@ public class Game extends JFrame {
         g2d.setColor(Color.white);
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);
+                g2d.drawRect(j * 50 + 150, i * 50 + 90, 50, 50);
             }
         }
     }
@@ -267,147 +363,153 @@ public class Game extends JFrame {
                     switch (matrix[i][j]) {
                         case 2:
                             g2d.setColor(new Color(222, 107, 145, 255));
-                            g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.fillRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.setColor(Color.black);
+                            g2d.drawRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.fillRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.setColor(Color.white);
                             g2d.setFont(new Font("SansSerif", Font.BOLD, 20));
-                            g2d.drawString("2", j * 50 + 170, i * 50 + 90);
+                            g2d.drawString("2", j * 50 + 170, i * 50 + 120);
+
+                            /*//bordo rettangolo
+                            g2d.setColor(Color.white);
+                            g2d.setStroke(new BasicStroke(2));
+                            // Disegna il contorno del rettangolo
+                            g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);*/
                             break;
                         case 4:
                             g2d.setColor(new Color(4, 198, 82));
-                            g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.fillRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.setColor(Color.black);
+                            g2d.drawRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.fillRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.setColor(Color.white);
                             g2d.setFont(new Font("SansSerif", Font.BOLD, 20));
-                            g2d.drawString("4", j * 50 + 170, i * 50 + 90);
+                            g2d.drawString("4", j * 50 + 170, i * 50 + 120);
                             break;
                         case 8:
                             g2d.setColor(new Color(116, 205, 222));
-                            g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.fillRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.setColor(Color.black);
+                            g2d.drawRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.fillRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.setColor(Color.white);
                             g2d.setFont(new Font("SansSerif", Font.BOLD, 20));
-                            g2d.drawString("8", j * 50 + 170, i * 50 + 90);
+                            g2d.drawString("8", j * 50 + 170, i * 50 + 120);
                             break;
                         case 16:
                             g2d.setColor(new Color(0, 146, 234, 255));
-                            g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.fillRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.setColor(Color.black);
+                            g2d.drawRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.fillRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.setColor(Color.white);
                             g2d.setFont(new Font("SansSerif", Font.BOLD, 20));
-                            g2d.drawString("16", j * 50 + 170, i * 50 + 90);
+                            g2d.drawString("16", j * 50 + 165, i * 50 +120);
                             break;
                         case 32:
                             g2d.setColor(new Color(255, 109, 0, 255));
-                            g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.fillRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.setColor(Color.black);
+                            g2d.drawRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.fillRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.setColor(Color.white);
                             g2d.setFont(new Font("SansSerif", Font.BOLD, 20));
-                            g2d.drawString("32", j * 50 + 165, i * 50 + 90);
+                            g2d.drawString("32", j * 50 + 165, i * 50 + 120);
                             break;
                         case 64:
                             g2d.setColor(new Color(117, 80, 245, 255));
-                            g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.fillRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.setColor(Color.black);
+                            g2d.drawRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.fillRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.setColor(Color.white);
                             g2d.setFont(new Font("SansSerif", Font.BOLD, 20));
-                            g2d.drawString("64", j * 50 + 165, i * 50 + 90);
+                            g2d.drawString("64", j * 50 + 165, i * 50 + 120);
                             break;
                         case 128:
                             g2d.setColor(new Color(116, 87, 73, 255));
-                            g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.fillRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.setColor(Color.black);
+                            g2d.drawRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.fillRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.setColor(Color.white);
                             g2d.setFont(new Font("SansSerif", Font.BOLD, 20));
-                            g2d.drawString("128", j * 50 + 160, i * 50 + 90);
+                            g2d.drawString("128", j * 50 + 157, i * 50 + 120);
                             break;
                         case 256:
                             g2d.setColor(new Color(128, 128, 128));
-                            g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.fillRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.setColor(Color.black);
+                            g2d.drawRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.fillRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.setColor(Color.white);
                             g2d.setFont(new Font("SansSerif", Font.BOLD, 20));
-                            g2d.drawString("256", j * 50 + 160, i * 50 + 90);
+                            g2d.drawString("256", j * 50 + 159, i * 50 + 120);
                             break;
                         case 512:
                             g2d.setColor(new Color(249, 168, 37, 255));
-                            g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.fillRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.setColor(Color.black);
+                            g2d.drawRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.fillRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.setColor(Color.white);
                             g2d.setFont(new Font("SansSerif", Font.BOLD, 20));
-                            g2d.drawString("512", j * 50 + 160, i * 50 + 90);
+                            g2d.drawString("512", j * 50 + 158, i * 50 + 120);
                             break;
                         case 1024:
                             g2d.setColor(new Color(198, 40, 40, 255));
-                            g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.fillRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.setColor(Color.black);
+                            g2d.drawRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.fillRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.setColor(Color.white);
                             g2d.setFont(new Font("SansSerif", Font.BOLD, 20));
-                            g2d.drawString("1024", j * 50 + 160, i * 50 + 90);
+                            g2d.drawString("1024", j * 50 + 152, i * 50 + 120);
                             break;
                         case 2048:
                             g2d.setColor(new Color(40, 53, 147, 255));
-                            g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.fillRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.setColor(Color.black);
+                            g2d.drawRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.fillRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.setColor(Color.white);
                             g2d.setFont(new Font("SansSerif", Font.BOLD, 20));
-                            g2d.drawString("2048", j * 50 + 160, i * 50 + 90);
+                            g2d.drawString("2048", j * 50 + 153, i * 50 + 120);
                             break;
                         case 4096:
                             g2d.setColor(new Color(151, 57, 227));
-                            g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.fillRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.setColor(Color.black);
+                            g2d.drawRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.fillRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.setColor(Color.white);
                             g2d.setFont(new Font("SansSerif", Font.BOLD, 20));
-                            g2d.drawString("4096", j * 50 + 160, i * 50 + 90);
+                            g2d.drawString("4096", j * 50 + 153, i * 50 + 120);
                             break;
                         case 8192:
                             g2d.setColor(new Color(46, 220, 54));
-                            g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.fillRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.setColor(Color.black);
+                            g2d.drawRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.fillRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.setColor(Color.white);
                             g2d.setFont(new Font("SansSerif", Font.BOLD, 20));
-                            g2d.drawString("8192", j * 50 + 160, i * 50 + 90);
+                            g2d.drawString("8192", j * 50 + 155, i * 50 + 120);
                             break;
                         case 16384:
                             g2d.setColor(new Color(108, 86, 21));
-                            g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.fillRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.setColor(Color.black);
+                            g2d.drawRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.fillRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.setColor(Color.white);
                             g2d.setFont(new Font("SansSerif", Font.BOLD, 20));
-                            g2d.drawString("16384", j * 50 + 160, i * 50 + 90);
+                            g2d.drawString("16384", j * 50 + 155, i * 50 + 120);
                             break;
                         case 32768:
                             g2d.setColor(new Color(145, 76, 155));
-                            g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.fillRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.setColor(Color.black);
+                            g2d.drawRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.fillRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.setColor(Color.white);
                             g2d.setFont(new Font("SansSerif", Font.BOLD, 20));
-                            g2d.drawString("32768", j * 50 + 160, i * 50 + 90);
+                            g2d.drawString("32768", j * 50 + 155, i * 50 + 120);
                             break;
                         case 65536:
                             g2d.setColor(new Color(29, 86, 35));
-                            g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.fillRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.setColor(Color.black);
+                            g2d.drawRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.fillRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.setColor(Color.white);
                             g2d.setFont(new Font("SansSerif", Font.BOLD, 20));
-                            g2d.drawString("65536", j * 50 + 160, i * 50 + 90);
+                            g2d.drawString("65536", j * 50 + 150, i * 50 + 120);
                             break;
                         case 131072:
                             g2d.setColor(new Color(106, 176, 31));
-                            g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.fillRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.setColor(Color.black);
-                            g2d.setFont(new Font("SansSerif", Font.BOLD, 20));
-                            g2d.drawString("131072", j * 50 + 160, i * 50 + 90);
+                            g2d.drawRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.fillRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.setColor(Color.white);
+                            g2d.setFont(new Font("SansSerif", Font.BOLD, 10));
+                            g2d.drawString("131072", j * 50 + 150, i * 50 + 120);
                             break;
                         case 262144:
                             g2d.setColor(new Color(36, 63, 9));
-                            g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.fillRect(j * 50 + 150, i * 50 + 60, 50, 50);
-                            g2d.setColor(Color.black);
+                            g2d.drawRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.fillRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            g2d.setColor(Color.white);
                             g2d.setFont(new Font("SansSerif", Font.BOLD, 20));
-                            g2d.drawString("131072", j * 50 + 160, i * 50 + 90);
+                            g2d.drawString("131072", j * 50 + 150, i * 50 + 120);
                             break;
                     }
                 }
@@ -484,12 +586,14 @@ public class Game extends JFrame {
 
     @Override
     public void paint(Graphics g) {
+        // per far si che valore del blocco compaia prima che il blocco cade
+        value= genereteBlock();
+        prossimoValore.setText("Prossimo valore: " + value);
         super.paint(g);
         drawRectangles(g);
         fillMatrix(g);
     }
     public static void main(String[] args) {
-
         SetScore getScoreInstance = new SetScore();
         java.util.List<String> scores = setScore.getHighScores();
         for(String score : scores){
