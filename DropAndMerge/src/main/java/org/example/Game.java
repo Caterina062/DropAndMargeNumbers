@@ -43,6 +43,7 @@ public class Game extends JFrame {
 
     ///
     JTextArea finalScore = new JTextArea();
+    JTextArea nextValueShow = new JTextArea();
 
     void setMatrix(int[][] matrix) {
         this.matrix = matrix;
@@ -54,24 +55,29 @@ public class Game extends JFrame {
         setTitle("DROP & MERGE NUMBERS");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         button.setVisible(true);
-        button.setBounds(450, 190, 100, 40);
+        button.setBounds(450, 230, 100, 40);
+        button.setFont(new Font("SansSerif", Font.BOLD, 15));
+        //button.setForeground(Color.white);
+        //button.setBackground(new Color(205, 90, 213));
+
         setLayout(null);
         add(button);
         setVisible(true);
         setLocationRelativeTo(null);
 
         add(scoreLabel);
-        scoreLabel.setBounds(450, 100, 200, 70);
+        scoreLabel.setBounds(450, 140, 200, 70);
         scoreLabel.setVisible(true);
         scoreLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
         scoreLabel.setForeground(Color.white);
         scoreLabel.setBackground(new Color(35, 45, 55, 255));
-        scoreLabel.setBorder(new LineBorder(new Color(24, 115, 120, 255), 1));
+        //scoreLabel.setBorder(new LineBorder(new Color(24, 115, 120, 255), 1));
         scoreLabel.setText("Score:\n" + attualScore);
+        scoreLabel.setForeground(new Color(231, 202, 51));
         scoreLabel.setEditable(false);
 
         add(prossimoValore);
-        prossimoValore.setBounds(450, 20, 1000, 40);
+        prossimoValore.setBounds(450, 60, 1000, 40);
         prossimoValore.setForeground(Color.white);
         prossimoValore.setVisible(true);
         prossimoValore.setFont(new Font("SansSerif", Font.BOLD, 20));
@@ -79,11 +85,10 @@ public class Game extends JFrame {
 
 
         add(countdownLabel);  // Aggiungi la countdownLabel al frame
-        countdownLabel.setBounds(450, 40, 200, 40);
+        countdownLabel.setBounds(450, 86, 200, 40);
         countdownLabel.setForeground(Color.white);
         countdownLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
 
-        /////////////////////
         add(finalScore);
         finalScore.setEditable(false);
         finalScore.setBounds(450, 100, 400, 200);
@@ -94,11 +99,11 @@ public class Game extends JFrame {
 
         add(inizioPartita);
         inizioPartita.setVisible(false);
-        inizioPartita.setBounds(450, 350, 200, 40);
+        inizioPartita.setBounds(450, 300, 200, 40);
 
     }
 
-    int genereteBlock() {  //TODO il valore del blocco deve comparire prima che il blocco cade e non dopo che l'ho già messo
+    int genereteBlock() {
         //int[] possibleValues= {2, 4, 8, 16, 32};
         int valore = possibleValues[random.nextInt(possibleValues.length)];
         //prossimoValore.setText("Prossimo valore: " + valore);
@@ -251,7 +256,7 @@ public class Game extends JFrame {
 
     void updateValues() {
         int counter=0;
-        LinkedList<Integer> ValueBlock = new LinkedList<>();
+        //LinkedList<Integer> ValueBlock = new LinkedList<>();
         for(int i=0; i<rows-1; i++){
             for(int j=0; j<cols; j++){
                 if(matrix[i][j]>possibleValues[possibleValues.length-1]){
@@ -327,6 +332,7 @@ public class Game extends JFrame {
         prossimoValore.setVisible(true);
         countdownLabel.setVisible(true);
         attualScore=0;
+
         possibleValues = new int[]{2, 4, 8, 16, 32};
         //richiamare la matrice da disegnare da zero
         for(int i=0; i<rows; i++){
@@ -504,7 +510,7 @@ public class Game extends JFrame {
                             g2d.drawString("131072", j * 50 + 150, i * 50 + 120);
                             break;
                         case 262144:
-                            g2d.setColor(new Color(36, 63, 9));
+                            g2d.setColor(new Color(45, 7, 61));
                             g2d.drawRect(j * 50 + 150, i * 50 + 90, 50, 50);
                             g2d.fillRect(j * 50 + 150, i * 50 + 90, 50, 50);
                             g2d.setColor(Color.white);
@@ -536,6 +542,7 @@ public class Game extends JFrame {
     }
 
     private void passInputToOracle(String filePath) throws Exception {
+        EmbASPManager.getInstance().reset();
         String encoding = readEncoding(filePath); //legge il file di encoding
         EmbASPManager.getInstance().getProgram().addProgram(encoding);
         for (int i = 0; i < rows; i++) {
@@ -545,8 +552,9 @@ public class Game extends JFrame {
         }
 
         EmbASPManager.getInstance().getProgram().addProgram("block(" + value + ").");
+        EmbASPManager.getInstance().getProgram().addProgram("maxValue("+possibleValues[possibleValues.length-1]+").");
 
-        System.out.println(EmbASPManager.getInstance().getProgram().getPrograms());
+        //System.out.println(EmbASPManager.getInstance().getProgram().getPrograms());
         EmbASPManager.getInstance().getHandler().addProgram(EmbASPManager.getInstance().getProgram());
     }
 
@@ -576,19 +584,90 @@ public class Game extends JFrame {
             //Only the first answerSet is needed
             break;
         }
-        EmbASPManager.getInstance().reset();
+        //EmbASPManager.getInstance().reset();
         if(result==-1){ //se non ha generato nessuna mossa
             System.out.println("colonna precedente: " + colonnaPrecedente);
             result=colonnaPrecedente;
         }
         return result;
     }
+    void prossimoValore(){ //TODO da modificare
+        value=genereteBlock();
+        nextValueShow.setText(Integer.toString(value));
+        nextValueShow.setBounds(615, 45, 50, 50);
+        nextValueShow.setForeground(Color.white);
+        nextValueShow.setFont(new Font("SansSerif", Font.BOLD, 20));
+        nextValueShow.setEditable(false);
+        //centrare la stringa
+        //i margini vanno cambiati nello switch
+        nextValueShow.setMargin(new Insets(10, 16, 10, 25));
 
+        add(nextValueShow);
+
+        switch (value) {
+            case 2:
+                nextValueShow.setBackground(new Color(222, 107, 145, 255));
+                break;
+            case 4:
+                nextValueShow.setBackground(new Color(4, 198, 82));
+                break;
+            case 8:
+                nextValueShow.setBackground(new Color(116, 205, 222));
+                break;
+            case 16:
+                nextValueShow.setBackground(new Color(0, 146, 234, 255));
+                break;
+            case 32:
+                nextValueShow.setBackground(new Color(255, 109, 0, 255));
+                break;
+            case 64:
+                nextValueShow.setForeground(new Color(117, 80, 245, 255));
+                break;
+            case 128:
+                nextValueShow.setForeground(new Color(116, 87, 73, 255));
+                break;
+            case 256:
+                nextValueShow.setForeground(new Color(128, 128, 128));
+                break;
+            case 512:
+                nextValueShow.setForeground(new Color(249, 168, 37, 255));
+                break;
+            case 1024:
+                nextValueShow.setForeground(new Color(198, 40, 40, 255));
+                break;
+            case 2048:
+                nextValueShow.setForeground(new Color(40, 53, 147, 255));
+                break;
+            case 4096:
+                nextValueShow.setForeground(new Color(151, 57, 227));
+                break;
+            case 8192:
+                nextValueShow.setForeground(new Color(46, 220, 54));
+                break;
+            case 16384:
+                nextValueShow.setForeground(new Color(108, 86, 21));
+                break;
+            case 32768:
+                nextValueShow.setForeground(new Color(145, 76, 155));
+                break;
+            case 65536:
+                nextValueShow.setForeground(new Color(29, 86, 35));
+                break;
+            case 131072:
+                nextValueShow.setForeground(new Color(106, 176, 31));
+                break;
+            case 262144:
+                nextValueShow.setForeground(new Color(45, 7, 61));
+                break;
+        }
+
+        prossimoValore.setText("Prossimo valore: ");
+        //prossimoValore.setText("Prossimo valore: " + value);
+    }
     @Override
     public void paint(Graphics g) {
-        // per far si che valore del blocco compaia prima che il blocco cade
-        value= genereteBlock();
-        prossimoValore.setText("Prossimo valore: " + value);
+        prossimoValore();
+
         super.paint(g);
         drawRectangles(g);
         fillMatrix(g);
