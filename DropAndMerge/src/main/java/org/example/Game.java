@@ -323,7 +323,7 @@ public class Game extends JFrame {
 
     }
 
-    void nuovaPartita(ActionEvent e){
+    void nuovaPartita(ActionEvent e){ //TODO togliere il quadratino del prossimo valore quando mostriamo il best score
         finalScore.setVisible(false);
         inizioPartita.setVisible(false);
         button.setVisible(true);
@@ -591,7 +591,8 @@ public class Game extends JFrame {
         }
         return result;
     }
-    void prossimoValore(){ //TODO da modificare
+    void prossimoValore(){ //TODO da modificare, dobbiamo agguingere anche se abbaimo un numero molto più grande dell'ultimo
+        //TODO modificare il set Margin per ogni valore
         value=genereteBlock();
         nextValueShow.setText(Integer.toString(value));
         nextValueShow.setBounds(615, 45, 50, 50);
