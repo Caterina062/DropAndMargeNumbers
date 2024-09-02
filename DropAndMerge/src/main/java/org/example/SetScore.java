@@ -9,6 +9,7 @@ public class SetScore {
 
 
     public java.util.List<String> getHighScores() {
+        highScore.clear();
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -21,6 +22,7 @@ public class SetScore {
     }
 
     public void updateScore(int score){;
+        getHighScores();  // Leggi i punteggi dal file
         for(int i = 0; i < highScore.size(); i++){
             if(score > Integer.parseInt(highScore.get(i))){
                 highScore.add(i, "" + score);

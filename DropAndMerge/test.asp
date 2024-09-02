@@ -1,18 +1,17 @@
 %Una cella non può contenere più di un numero alla volta
 cell(0,0,0). cell(0,1,0). cell(0,2,0). cell(0,3,0). cell(0,4,0).
-cell(1,0,0). cell(1,1,8). cell(1,2,0). cell(1,3,0). cell(1,4,0).
-cell(2,0,0). cell(2,1,16). cell(2,2,0). cell(2,3,0). cell(2,4,0).
-cell(3,0,0). cell(3,1,32). cell(3,2,0). cell(3,3,0). cell(3,4,0).
-cell(4,0,0). cell(4,1,64). cell(4,2,0). cell(4,3,64). cell(4,4,0).
-cell(5,0,256). cell(5,1,128). cell(5,2,16). cell(5,3,128). cell(5,4,256).
-block(2). move(1). maxValue(64).
+cell(1,0,0). cell(1,10). cell(1,2,0). cell(1,3,0). cell(1,4,0).
+cell(2,0,0). cell(2,1,0). cell(2,2,0). cell(2,3,0). cell(2,4,0).
+cell(3,0,0). cell(3,1,0). cell(3,2,0). cell(3,3,0). cell(3,4,0).
+cell(4,0,0). cell(4,1,0). cell(4,2,0). cell(4,3,0). cell(4,4,32).
+cell(5,0,0). cell(5,1,16). cell(5,2,0). cell(5,3,32). cell(5,4,64).
+block(4). maxValue(32). 
+
+
 %guess
 %move(X)|noMove(X):-cell(_,X,_).
 %deve generare almeno una mossa
 :-#count{X:move(X)}<>1.
-%non deve arrivare in cima se può fare altre mosse
-
-%:~move(X), cell(0,X,_). [3000@10]
 
 %prendo indice di riga per sotto e lati
 sotto(MIN):-move(X), #min{Y:cell(Y,X,N),N>0}=MIN, MIN>0.
@@ -64,6 +63,7 @@ mergeSotto:-bloccoSotto(X), block(Y), X=Y.
 :~not mergeSotto. [1@5]
 
 %decide dove cadere
+:~bloccoSotto(X), block(Y), X>=Y*2. [0@4] %preferire le caselle con il valore del blocco che cade *2
 :~divisioneSotto(N). [N@4]
 :~#min{N:divisioniLaterali(N)}=MIN. [MIN@3]
 
@@ -71,6 +71,46 @@ mergeSotto:-bloccoSotto(X), block(Y), X=Y.
 :~ceSotto, sotto(MIN), Z=MIN-1. [Z@2]
 :~not ceSotto. [0@2]
 
-%per ultimo preferisco fare il merge laterale piuttosto che niente
-:~mergeLaterale. [0@1]
+%per ultimo preferisco fare il merge laterale piuttosto che niente, controllare il doppio sotto, se lo è meglio
+:~mergeLaterale. [0@1] %, bloccoSotto(X), block(Y), X>Y*2
 :~not mergeLaterale. [1@1]
+
+
+%valore x*2 lo preferisco
+%:~block(X), bloccoSotto(Y), move(N), X=Y*2. [0@..]
+%:~block(X), bloccoSotto(Y), move(N), X<>Y*2. [1@ ..]
+
+%merge doppio ad L (forse non 5)
+%:~move(X), bloccoSotto(Y), block(N), Y<=(N*2). [2@5]
+%:~move(X), bloccoSotto(Y), bloccoSinistra(Z), block(N), N=Z, N>Y, Y>N*2. [0@5]
+%:~move(X), bloccoSotto(Y), bloccoSinistra(Z), block(N), N<>Z.[1@5]
+%:~move(X), bloccoSotto(Y), bloccoDestra(Z), block(N), N=Z, N>Y, Y>N*2. [0@5]
+%:~move(X), bloccoSotto(Y), bloccoDestra(Z), block(N), N<>Z.[1@5]
+
+%preferire se non ho merge quidni a livello 4? preferire metterlo sul quadratino di valore blocco*2 se c'è altrimenti continuare  afre come fa adesso, quindi aggiungere un livello
+%provare a fare la regola del merge a tre, quindi controllare se in caso posso fare il merge per tre di avere il valore sotto la casella che farà il merge del valore del blocco per tre almeno, oppure etc aaltri casi facendo costo alto se per caso abbiamo un merg a tre e sotto abbiamo il doppio del blocco e merg basso probabilmente zero se invece abbiamo numeri molto più grandi
+%vedere se possibile fare il merge doppio, quindi scegliere le colonne dove dopo aver fatto il primo merge possiamo farlo ricorsivamente, controllando però che non ci siano merge laterali che alterano il valore del blocco che fa il merge
+
+%:~bloccoSotto(X), block(Y), X=Y*2. [0@4]
+%:~bloccoSotto(X), block(Y), X<>Y*2. [1@4]
+
+%%liv1 come ulrimo controllo più ttosto che metterlo a caso preferisco fare i merge laterali
+%%liv2 preferisco la collonna più bassa altrimenti quella più a sinistra
+%%liv3 se sono tutti più piccoli i valori nella matrice allora cade su quello più grande
+%%liv4 cade sulla blocco con il miglior punteggio, quindi o quello più grande
+%%...nuovo liv4... preferire cadere su i blocchi che hanno il valore del blocco che sta cadndo per due se possibile  ...........
+%%liv5 controlla se può fare il merge sotto, se può farlo sicuramente cadre li
+%%liv6 priorità assoluta al merge sotto, non deve arriavre in cima, non metterlo mai in cima, ma se può fare il merge lo mette
+%%liv7
+
+
+
+
+
+
+%256|     preferisco metterla su 32 perché c'è possibilità che io somma due 16 e faccia un 32 così facendo il merge il quadratino si sposta
+%32 | 16
+%controllo unico se per caso si trova al primissimo rigo e abbiaqmo la possibilità di fare merge dobbio con laterale
+%controllo che se il numero sotto è più grande di me per tre allora metterlo li altrimenti no, oppure se è vuoto quidni non c'è niente sotto sono all'ultima riga, (questo per fare il merge a tre)
+%prevedere il caso in cui è ad L 
+

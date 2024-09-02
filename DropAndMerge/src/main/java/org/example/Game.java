@@ -173,7 +173,7 @@ public class Game extends JFrame {
         merge();
         blockOnTop();
     }
-    void stampa(){
+    void print(){
         for (int i = 0; i < rows; i++) {
             System.out.println("indice riga: "+i);
             for (int j = 0; j < cols; j++) {
@@ -199,7 +199,7 @@ public class Game extends JFrame {
                         matrix[i][colonnaScelta - 1] = 0;
                         attualScore += valore * 2;
                         merge = true;
-                        stampa();
+                        print();
                     }
                     if (colonnaScelta + 1 < cols && matrix[i][colonnaScelta + 1] == valore) {
                         System.out.println("merge destro " + matrix[i][colonnaScelta]);
@@ -254,22 +254,23 @@ public class Game extends JFrame {
         }
     }
 
-    void updateValues() {
+    void updateValues() {  //TODO aggiunge quando ci sono tre valori nella mtrice con valore maaggiore del doppio dell'ultimo elemento nei possibili
         int counter=0;
         //LinkedList<Integer> ValueBlock = new LinkedList<>();
         for(int i=0; i<rows-1; i++){
             for(int j=0; j<cols; j++){
-                if(matrix[i][j]>possibleValues[possibleValues.length-1]){
+                if(matrix[i][j]>(possibleValues[possibleValues.length-1])*2){
                     counter+=1;
                 }
             }
         }
-        if(counter>=2) {
+        if(counter>=3) {
             int [] newPossibleValues= new int[possibleValues.length+1];
             System.arraycopy(possibleValues, 0, newPossibleValues, 0, possibleValues.length);
             newPossibleValues[newPossibleValues.length-1]=values[newPossibleValues.length-1];
             possibleValues=newPossibleValues;
         }
+
         for(int i=0; i<possibleValues.length; i++){
             System.out.println(possibleValues[i]);
         }
@@ -305,6 +306,9 @@ public class Game extends JFrame {
         scoreLabel.setVisible(false);
         prossimoValore.setVisible(false);
         countdownLabel.setVisible(false);
+        //nextValueShow.setForeground(new Color(35, 45, 55, 255));
+        //nextValueShow.setBackground(new Color(35, 45, 55, 255));
+        nextValueShow.setVisible(false);
 
         inizioPartita.setVisible(true);
 
@@ -323,7 +327,7 @@ public class Game extends JFrame {
 
     }
 
-    void nuovaPartita(ActionEvent e){ //TODO togliere il quadratino del prossimo valore quando mostriamo il best score
+    void nuovaPartita(ActionEvent e){
         finalScore.setVisible(false);
         inizioPartita.setVisible(false);
         button.setVisible(true);
@@ -332,6 +336,9 @@ public class Game extends JFrame {
         prossimoValore.setVisible(true);
         countdownLabel.setVisible(true);
         attualScore=0;
+        nextValueShow.setVisible(true);
+
+
 
         possibleValues = new int[]{2, 4, 8, 16, 32};
         //richiamare la matrice da disegnare da zero
@@ -390,7 +397,7 @@ public class Game extends JFrame {
                             g2d.drawString("4", j * 50 + 170, i * 50 + 120);
                             break;
                         case 8:
-                            g2d.setColor(new Color(116, 205, 222));
+                            g2d.setColor(new Color(60, 189, 238));
                             g2d.drawRect(j * 50 + 150, i * 50 + 90, 50, 50);
                             g2d.fillRect(j * 50 + 150, i * 50 + 90, 50, 50);
                             g2d.setColor(Color.white);
@@ -398,7 +405,7 @@ public class Game extends JFrame {
                             g2d.drawString("8", j * 50 + 170, i * 50 + 120);
                             break;
                         case 16:
-                            g2d.setColor(new Color(0, 146, 234, 255));
+                            g2d.setColor(new Color(2, 116, 180, 255));
                             g2d.drawRect(j * 50 + 150, i * 50 + 90, 50, 50);
                             g2d.fillRect(j * 50 + 150, i * 50 + 90, 50, 50);
                             g2d.setColor(Color.white);
@@ -591,79 +598,112 @@ public class Game extends JFrame {
         }
         return result;
     }
-    void prossimoValore(){ //TODO da modificare, dobbiamo agguingere anche se abbaimo un numero molto più grande dell'ultimo
-        //TODO modificare il set Margin per ogni valore
+    void prossimoValore(){ 
         value=genereteBlock();
         nextValueShow.setText(Integer.toString(value));
         nextValueShow.setBounds(615, 45, 50, 50);
-        nextValueShow.setForeground(Color.white);
+
         nextValueShow.setFont(new Font("SansSerif", Font.BOLD, 20));
         nextValueShow.setEditable(false);
         //centrare la stringa
         //i margini vanno cambiati nello switch
-        nextValueShow.setMargin(new Insets(10, 16, 10, 25));
 
         add(nextValueShow);
 
         switch (value) {
             case 2:
                 nextValueShow.setBackground(new Color(222, 107, 145, 255));
+                nextValueShow.setForeground(Color.white);
+                nextValueShow.setMargin(new Insets(10, 19, 10, 19));
                 break;
             case 4:
                 nextValueShow.setBackground(new Color(4, 198, 82));
+                nextValueShow.setForeground(Color.white);
+                nextValueShow.setMargin(new Insets(10, 19, 10, 20));
                 break;
             case 8:
-                nextValueShow.setBackground(new Color(116, 205, 222));
+                nextValueShow.setBackground(new Color(60, 189, 238));
+                nextValueShow.setForeground(Color.white);
+                nextValueShow.setMargin(new Insets(10, 20, 10, 18));
                 break;
             case 16:
-                nextValueShow.setBackground(new Color(0, 146, 234, 255));
+                nextValueShow.setBackground(new Color(2, 116, 180, 255));
+                nextValueShow.setForeground(Color.white);
+                nextValueShow.setMargin(new Insets(10, 14, 10, 20));
                 break;
             case 32:
                 nextValueShow.setBackground(new Color(255, 109, 0, 255));
+                nextValueShow.setForeground(Color.white);
+                nextValueShow.setMargin(new Insets(10, 13, 10, 20));
                 break;
             case 64:
-                nextValueShow.setForeground(new Color(117, 80, 245, 255));
+                nextValueShow.setBackground(new Color(117, 80, 245, 255));
+                nextValueShow.setForeground(Color.white);
+                nextValueShow.setMargin(new Insets(10, 15, 10, 15));
                 break;
             case 128:
-                nextValueShow.setForeground(new Color(116, 87, 73, 255));
+                nextValueShow.setBackground(new Color(116, 87, 73, 255));
+                nextValueShow.setForeground(Color.white);
+                nextValueShow.setMargin(new Insets(10, 9, 10, 9));
                 break;
             case 256:
-                nextValueShow.setForeground(new Color(128, 128, 128));
+                nextValueShow.setBackground(new Color(128, 128, 128));
+                nextValueShow.setForeground(Color.white);
+                nextValueShow.setMargin(new Insets(10, 9, 10, 9));
                 break;
             case 512:
-                nextValueShow.setForeground(new Color(249, 168, 37, 255));
+                nextValueShow.setBackground(new Color(249, 168, 37, 255));
+                nextValueShow.setForeground(Color.white);
+                nextValueShow.setMargin(new Insets(10, 9, 10, 9));
                 break;
             case 1024:
-                nextValueShow.setForeground(new Color(198, 40, 40, 255));
+                nextValueShow.setBackground(new Color(198, 40, 40, 255));
+                nextValueShow.setForeground(Color.white);
+                nextValueShow.setMargin(new Insets(10, 6, 10, 6));
                 break;
             case 2048:
-                nextValueShow.setForeground(new Color(40, 53, 147, 255));
+                nextValueShow.setBackground(new Color(40, 53, 147, 255));
+                nextValueShow.setForeground(Color.white);
+                nextValueShow.setMargin(new Insets(10, 6, 10, 6));
                 break;
             case 4096:
-                nextValueShow.setForeground(new Color(151, 57, 227));
+                nextValueShow.setBackground(new Color(151, 57, 227));
+                nextValueShow.setForeground(Color.white);
+                nextValueShow.setMargin(new Insets(10, 6, 10, 6));
                 break;
             case 8192:
-                nextValueShow.setForeground(new Color(46, 220, 54));
+                nextValueShow.setBackground(new Color(46, 220, 54));
+                nextValueShow.setForeground(Color.white);
+                nextValueShow.setMargin(new Insets(10, 5, 10, 5));
                 break;
             case 16384:
-                nextValueShow.setForeground(new Color(108, 86, 21));
+                nextValueShow.setBackground(new Color(108, 86, 21));
+                nextValueShow.setForeground(Color.white);
+                nextValueShow.setMargin(new Insets(10, 2, 10, 2));
                 break;
             case 32768:
-                nextValueShow.setForeground(new Color(145, 76, 155));
+                nextValueShow.setBackground(new Color(145, 76, 155));
+                nextValueShow.setForeground(Color.white);
+                nextValueShow.setMargin(new Insets(10, 2, 10, 2));
                 break;
             case 65536:
-                nextValueShow.setForeground(new Color(29, 86, 35));
+                nextValueShow.setBackground(new Color(29, 86, 35));
+                nextValueShow.setForeground(Color.white);
+                nextValueShow.setMargin(new Insets(10, 2, 10, 2));
                 break;
             case 131072:
-                nextValueShow.setForeground(new Color(106, 176, 31));
+                nextValueShow.setBackground(new Color(106, 176, 31));
+                nextValueShow.setForeground(Color.white);
+                nextValueShow.setMargin(new Insets(10, 1, 10, 1));
                 break;
             case 262144:
-                nextValueShow.setForeground(new Color(45, 7, 61));
+                nextValueShow.setBackground(new Color(45, 7, 61));
+                nextValueShow.setForeground(Color.white);
+                nextValueShow.setMargin(new Insets(10, 1, 10, 1));
                 break;
         }
 
         prossimoValore.setText("Prossimo valore: ");
-        //prossimoValore.setText("Prossimo valore: " + value);
     }
     @Override
     public void paint(Graphics g) {
