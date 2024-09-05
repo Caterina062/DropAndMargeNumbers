@@ -13,11 +13,8 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.Random;
 import javax.swing.*;
-import javax.swing.border.LineBorder;
-
 public class Game extends JFrame {
     JButton button = new JButton("Inizio");
     JButton inizioPartita = new JButton("Nuova Partita");
@@ -110,6 +107,8 @@ public class Game extends JFrame {
         return valore;
     }
 
+    /*
+
     public void actionPerformed(ActionEvent e) throws Exception {
         //value = genereteBlock();
         passInputToOracle("DropAndMerge/encoding.asp");
@@ -118,6 +117,7 @@ public class Game extends JFrame {
         // Timer per il countdown da 10 a 1
         countdownTime = 10;
         countdownLabel.setText("Tempo rimanente: " + countdownTime);
+
 
         countdownTimer = new Timer(1000, new ActionListener() {
             @Override
@@ -172,7 +172,79 @@ public class Game extends JFrame {
         repaint();
         merge();
         blockOnTop();
+    }*/
+    public void actionPerformed(ActionEvent e) throws Exception {
+        passInputToOracle("DropAndMerge/encoding.asp");
+
+        // Riavvio del countdown quando si preme il bottone
+        resetAndStartCountdown();
+
+        // Quando l'utente preme il bottone, si inserisce il blocco
+        colonnaScelta = getOutputFromOracle();
+        colonnaPrecedente = colonnaScelta;
+
+        countdownTimer.stop();  // Ferma il countdown
+        inserisciBloccoInColonna();  // Inserisci il blocco nella colonna scelta
+
+        // Riavvia il countdown per il prossimo turno
+        resetAndStartCountdown();
     }
+
+    // Metodo per resettare il countdown e farlo partire da capo
+    private void resetAndStartCountdown() {
+        // Se esiste già un timer attivo, fermalo
+        if (countdownTimer != null && countdownTimer.isRunning()) {
+            countdownTimer.stop();
+        }
+
+        // Reset del countdown a 10
+        countdownTime = 10;
+        countdownLabel.setText("Tempo rimanente: " + countdownTime);
+
+        // Crea un nuovo timer che decrementa ogni secondo
+        countdownTimer = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                countdownTime--;
+                countdownLabel.setText("Tempo rimanente: " + countdownTime);
+                if (countdownTime <= 0) {
+                    countdownTimer.stop();  // Ferma il countdown quando arriva a 0
+
+                    // Se l'utente non ha premuto il bottone prima di arrivare a 0
+                    colonnaScelta = colonnaPrecedente;
+                    inserisciBloccoInColonna();
+
+                    // Riavvio il countdown da 10
+                    resetAndStartCountdown();
+                }
+            }
+        });
+
+    }
+
+    // Metodo per inserire il blocco nella colonna scelta
+    private void inserisciBloccoInColonna() {
+        // Inserisci il blocco nella colonna scelta
+        for (int i = rows - 1; i >= 0; i--) {
+            if (matrix[i][colonnaScelta] == 0) {
+                matrix[i][colonnaScelta] = value;
+                break;
+            }
+        }
+
+        // Aggiorna il punteggio e ridisegna l'interfaccia
+        scoreLabel.setText("Score: \n" + attualScore);
+        repaint();
+
+        // Genera un nuovo blocco per il turno successivo
+        value = genereteBlock();
+        countdownTimer.start();  // Avvia il nuovo countdown
+        scoreLabel.setText("Score: \n" + attualScore);
+        repaint();
+        merge();
+        blockOnTop();
+    }
+
     void print(){
         for (int i = 0; i < rows; i++) {
             System.out.println("indice riga: "+i);
@@ -293,8 +365,8 @@ public class Game extends JFrame {
                 JOptionPane.showMessageDialog(this, "Game Over", "Warning", JOptionPane.WARNING_MESSAGE);
                 button.setEnabled(false);
                 setScore.updateScore(attualScore);
-                countdownTimer.stop();
-                timer.stop();
+                //countdownTimer.stop();
+                //timer.stop();
                 //per mostrare i migliori punteggi
                 showScore();
                 break;
@@ -375,18 +447,21 @@ public class Game extends JFrame {
                 if (matrix[i][j] != 0) {
                     switch (matrix[i][j]) {
                         case 2:
+                            g2d.drawString("2", j * 50 + 170, i * 50 + 120);
                             g2d.setColor(new Color(222, 107, 145, 255));
                             g2d.drawRect(j * 50 + 150, i * 50 + 90, 50, 50);
                             g2d.fillRect(j * 50 + 150, i * 50 + 90, 50, 50);
+                            //g2d.drawRoundRect(j * 50 + 150, i * 50 + 90, 50, 50, 20, 20);
+                            //g2d.fillRoundRect(j * 50 + 150, i * 50 + 90, 50, 50, 15, 15);
                             g2d.setColor(Color.white);
                             g2d.setFont(new Font("SansSerif", Font.BOLD, 20));
                             g2d.drawString("2", j * 50 + 170, i * 50 + 120);
 
-                            /*//bordo rettangolo
-                            g2d.setColor(Color.white);
-                            g2d.setStroke(new BasicStroke(2));
+                            //bordo rettangolo
+                            //g2d.setColor(Color.white);
+                            //g2d.setStroke(new BasicStroke(1));
                             // Disegna il contorno del rettangolo
-                            g2d.drawRect(j * 50 + 150, i * 50 + 60, 50, 50);*/
+                            //g2d.drawRect(j * 50 + 150, i * 50 + 90, 50, 50);
                             break;
                         case 4:
                             g2d.setColor(new Color(4, 198, 82));
@@ -642,12 +717,12 @@ public class Game extends JFrame {
                 nextValueShow.setMargin(new Insets(10, 15, 10, 15));
                 break;
             case 128:
-                nextValueShow.setBackground(new Color(116, 87, 73, 255));
+                nextValueShow.setBackground(new Color(187, 115, 79, 255));
                 nextValueShow.setForeground(Color.white);
                 nextValueShow.setMargin(new Insets(10, 9, 10, 9));
                 break;
             case 256:
-                nextValueShow.setBackground(new Color(128, 128, 128));
+                nextValueShow.setBackground(new Color(136, 111, 111));
                 nextValueShow.setForeground(Color.white);
                 nextValueShow.setMargin(new Insets(10, 9, 10, 9));
                 break;
@@ -657,7 +732,7 @@ public class Game extends JFrame {
                 nextValueShow.setMargin(new Insets(10, 9, 10, 9));
                 break;
             case 1024:
-                nextValueShow.setBackground(new Color(198, 40, 40, 255));
+                nextValueShow.setBackground(new Color(150, 18, 18, 255));
                 nextValueShow.setForeground(Color.white);
                 nextValueShow.setMargin(new Insets(10, 6, 10, 6));
                 break;
@@ -677,7 +752,7 @@ public class Game extends JFrame {
                 nextValueShow.setMargin(new Insets(10, 5, 10, 5));
                 break;
             case 16384:
-                nextValueShow.setBackground(new Color(108, 86, 21));
+                nextValueShow.setBackground(new Color(204, 50, 17));
                 nextValueShow.setForeground(Color.white);
                 nextValueShow.setMargin(new Insets(10, 2, 10, 2));
                 break;

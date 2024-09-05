@@ -108,6 +108,24 @@ mergeSotto:-bloccoSotto(X), block(Y), X=Y.
 
 
 
+
+%se merge laterale con valore sotto grande ok senno no per due lati due costi diversi e lasciare anche il vecchio 
+
+% merge ad L
+
+moveL(X):-block(X), bloccoSotto(Y), bloccoSinistra(Z), X=Y, Y=Z, cell(_, Y, N), N>X*2.
+moveL(X):-block(X), bloccoSotto(Y), bloccoDestra(Z), X=Y, Y=Z, cell(_, Y, N), N>X*2.
+
+%:~block(X), bloccoSotto(Y), bloccoSinistra(Z), X=Y, Y=Z, cell(_, Y, N), N>X*2.[0@...]
+%:~block(X), bloccoSotto(Y), bloccoDestra(Z), X=Y, Y=Z, cell(_, Y, N), N>X*2.[0@...]
+%:~block(X), bloccoSotto(Y), bloccoSinistra(Z), X=Y, Y=Z, cell(_, Y, N), N>X*2.[0@...]
+:~moveL(X). [0@...]
+:~not moveL. [1@...]
+
+
+
+
+
 %256|     preferisco metterla su 32 perché c'è possibilità che io somma due 16 e faccia un 32 così facendo il merge il quadratino si sposta
 %32 | 16
 %controllo unico se per caso si trova al primissimo rigo e abbiaqmo la possibilità di fare merge dobbio con laterale

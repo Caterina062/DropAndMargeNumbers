@@ -1,3 +1,17 @@
+% tra i fatti che compongono il gioco, passiamo tramite Java, cell(R, C, N), dove R è il numero delle righe che va da 0 a 5, C il numero delle colonne che va da 0 a 4 e 
+% infine N che indica il valore della cella, zero se vuota un numero altrimenti
+% poi passiamo il valore del blocco che sta cadendo con block(N) e infine passiamo il valore massimo che possiamo avere in quel momento come valore del blocco che sta 
+% cadendo con maxValue(N)
+
+%                                                           WEACK CONTRAINT
+% LIV 5 all'ultimo livello essendo quello più importante controlliamo che il blocco non cada nell'ultimo rigo della matrice, se non ha la possibilità di fare merge con 
+%       un blocco sotto, facendo così finire il gioco perdendo 
+% LIV 4 in questo livello sceglialo la mossa migliore da fare in base se è possibile o meno fare il merge con un blocco che si trova sotto 
+% LIV 3
+% LIV 4
+% LIV 5
+% LIV 6
+
 %guess
 move(X)|noMove(X):-cell(_,X,_).
 %deve generare almeno una mossa
@@ -53,7 +67,7 @@ mergeSotto:-bloccoSotto(X), block(Y), X=Y.
 :~not mergeSotto. [1@5]
 
 %decide dove cadere
-%:~bloccoSotto(X), block(Y), X>=Y*2. [0@4] %preferire le caselle con il valore del blocco che cade *2, dovrebbe già farlo con quella sotto
+%:~bloccoSotto(X), block(Y), X>=Y*2. [0@4] %preferire le caselle con il valore del blocco che cade *2, dovrebbe già farlo con quella sotto il resto N+ 1 in modo che non preferisca dove non c'è niente se ho un valore diviso due dove poter mettere il quadratino che sta cadendo così da preferirlo in modo da fare una pila più alta e quando fa il merge fa tanti merge di fila
 :~divisioneSotto(N). [N@4]
 %controllo divisioni laterali
 %...
@@ -72,12 +86,17 @@ mergeSotto:-bloccoSotto(X), block(Y), X=Y.
 %:~block(X), bloccoSotto(Y), move(N), X=Y*2. [0@..]
 %:~block(X), bloccoSotto(Y), move(N), X<>Y*2. [1@ ..]
 
+
 %merge doppio ad L (forse non 5)
 %:~move(X), bloccoSotto(Y), block(N), Y<=(N*2). [2@5]
 %:~move(X), bloccoSotto(Y), bloccoSinistra(Z), block(N), N=Z, N>Y, Y>N*2. [0@5]
 %:~move(X), bloccoSotto(Y), bloccoSinistra(Z), block(N), N<>Z.[1@5]
 %:~move(X), bloccoSotto(Y), bloccoDestra(Z), block(N), N=Z, N>Y, Y>N*2. [0@5]
 %:~move(X), bloccoSotto(Y), bloccoDestra(Z), block(N), N<>Z.[1@5]
+
+
+
+
 
 %preferire se non ho merge quidni a livello 4? preferire metterlo sul quadratino di valore blocco*2 se c'è altrimenti continuare  afre come fa adesso, quindi aggiungere un livello
 %provare a fare la regola del merge a tre, quindi controllare se in caso posso fare il merge per tre di avere il valore sotto la casella che farà il merge del valore del blocco per tre almeno, oppure etc aaltri casi facendo costo alto se per caso abbiamo un merg a tre e sotto abbiamo il doppio del blocco e merg basso probabilmente zero se invece abbiamo numeri molto più grandi
