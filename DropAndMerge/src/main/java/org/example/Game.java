@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.Random;
 import javax.swing.*;
 public class Game extends JFrame {
-    JButton button = new JButton("Inizio");
+    JButton button = new JButton("Mossa");
     JButton inizioPartita = new JButton("Nuova Partita");
     int attualScore = 0;
     JTextArea scoreLabel = new JTextArea();
