@@ -28,6 +28,7 @@ public class Game extends JFrame {
     //int counter = 4;
     int countdownTime = 10;  // Variabile per il conto alla rovescia
     //LinkedList<Integer> possibleValues= new LinkedList<Integer>();
+    boolean isGamerOver = false;
     int[] possibleValues = {2, 4, 8, 16, 32};
     int[] values = {2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072};
     Random random = new Random();
@@ -187,11 +188,15 @@ public class Game extends JFrame {
         inserisciBloccoInColonna();  // Inserisci il blocco nella colonna scelta
 
         // Riavvia il countdown per il prossimo turno
+
         resetAndStartCountdown();
     }
 
     // Metodo per resettare il countdown e farlo partire da capo
     private void resetAndStartCountdown() {
+        if(isGamerOver){
+            return;
+        }
         // Se esiste già un timer attivo, fermalo
         if (countdownTimer != null && countdownTimer.isRunning()) {
             countdownTimer.stop();
@@ -214,16 +219,21 @@ public class Game extends JFrame {
                     colonnaScelta = colonnaPrecedente;
                     inserisciBloccoInColonna();
 
-                    // Riavvio il countdown da 10
-                    resetAndStartCountdown();
+                    if((!isGamerOver)) {
+                        // Riavvio il countdown da 10
+                        resetAndStartCountdown();
+                    }
                 }
             }
         });
-
+        countdownTimer.start();
     }
 
     // Metodo per inserire il blocco nella colonna scelta
     private void inserisciBloccoInColonna() {
+        if(isGamerOver){
+            return;
+        }
         // Inserisci il blocco nella colonna scelta
         for (int i = rows - 1; i >= 0; i--) {
             if (matrix[i][colonnaScelta] == 0) {
@@ -235,14 +245,19 @@ public class Game extends JFrame {
         // Aggiorna il punteggio e ridisegna l'interfaccia
         scoreLabel.setText("Score: \n" + attualScore);
         repaint();
-
-        // Genera un nuovo blocco per il turno successivo
-        value = genereteBlock();
-        countdownTimer.start();  // Avvia il nuovo countdown
-        scoreLabel.setText("Score: \n" + attualScore);
-        repaint();
         merge();
         blockOnTop();
+
+        // Genera un nuovo blocco per il turno successivo
+        if(!isGamerOver){
+            value = genereteBlock();
+            countdownTimer.start();  // Avvia il nuovo countdown
+            scoreLabel.setText("Score: \n" + attualScore);
+            repaint();
+        }
+
+        //merge();
+        //blockOnTop();
     }
 
     void print(){
@@ -365,8 +380,9 @@ public class Game extends JFrame {
                 JOptionPane.showMessageDialog(this, "Game Over", "Warning", JOptionPane.WARNING_MESSAGE);
                 button.setEnabled(false);
                 setScore.updateScore(attualScore);
-                //countdownTimer.stop();
-                //timer.stop();
+                countdownTimer.stop();
+                isGamerOver=true;
+
                 //per mostrare i migliori punteggi
                 showScore();
                 break;
@@ -400,6 +416,7 @@ public class Game extends JFrame {
     }
 
     void nuovaPartita(ActionEvent e){
+        isGamerOver=false; //
         finalScore.setVisible(false);
         inizioPartita.setVisible(false);
         button.setVisible(true);
