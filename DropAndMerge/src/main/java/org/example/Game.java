@@ -102,14 +102,11 @@ public class Game extends JFrame {
     }
 
     int genereteBlock() {
-        //int[] possibleValues= {2, 4, 8, 16, 32};
         int valore = possibleValues[random.nextInt(possibleValues.length)];
-        //prossimoValore.setText("Prossimo valore: " + valore);
         return valore;
     }
 
     /*
-
     public void actionPerformed(ActionEvent e) throws Exception {
         //value = genereteBlock();
         passInputToOracle("DropAndMerge/encoding.asp");
@@ -260,7 +257,7 @@ public class Game extends JFrame {
         //blockOnTop();
     }
 
-    void print(){
+    void print(){ //stampe da terminale, usata solo per i controlli
         for (int i = 0; i < rows; i++) {
             System.out.println("indice riga: "+i);
             for (int j = 0; j < cols; j++) {
@@ -268,7 +265,6 @@ public class Game extends JFrame {
             }
             System.out.println();
         }
-
     }
 
     void merge() {
@@ -296,8 +292,7 @@ public class Game extends JFrame {
                         merge = true;
                     }
                     System.out.println(i+1);
-                    if(i+1<6){
-                        System.out.print(matrix[i+1][colonnaScelta]);}
+                    if(i+1<6){ System.out.print(matrix[i+1][colonnaScelta]);}
                     if (i + 1 < rows && matrix[i + 1][colonnaScelta] == valore) {
                         System.out.println("merge sotto " + matrix[i][colonnaScelta]);
                         matrix[i][colonnaScelta] *= 2;
@@ -374,7 +369,7 @@ public class Game extends JFrame {
         }
     }
 
-    void blockOnTop() {
+    void blockOnTop() { //controllo se abbiamo perso, se un blocco è arrivato in cima
         for (int i = 0; i < cols; i++) {
             if (matrix[0][i] != 0) {
                 JOptionPane.showMessageDialog(this, "Game Over", "Warning", JOptionPane.WARNING_MESSAGE);
@@ -446,7 +441,14 @@ public class Game extends JFrame {
         repaint();
     }
 
-    void drawRectangles(Graphics g) {
+
+
+
+
+
+
+
+    void drawRectangles(Graphics g) { //disegna la matrice, i quadrati bianchi
         Graphics2D g2d = (Graphics2D) g;
         g2d.setStroke(new BasicStroke(2));
         g2d.setColor(Color.white);
@@ -457,7 +459,16 @@ public class Game extends JFrame {
         }
     }
 
-    void fillMatrix(Graphics g) {
+
+
+
+
+
+
+
+
+
+    void fillMatrix(Graphics g) { //disegna i quadratini colorati in base al valore
         Graphics2D g2d = (Graphics2D) g;
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
@@ -622,6 +633,8 @@ public class Game extends JFrame {
         }
     }
 
+
+
     private String readEncoding(String filePath) { //metodo per leggere un file
         String encoding = "";
         try {
@@ -640,6 +653,8 @@ public class Game extends JFrame {
         return encoding;
     }
 
+
+    // serve per passare i valori alla libreria EmbASP, quindi i fatti creati con Java
     private void passInputToOracle(String filePath) throws Exception {
         EmbASPManager.getInstance().reset();
         String encoding = readEncoding(filePath); //legge il file di encoding
@@ -658,6 +673,7 @@ public class Game extends JFrame {
     }
 
 
+    //l'output restutuito dal file ASP, tutti gli answert set
     private int getOutputFromOracle() throws ObjectNotValidException, IllegalAnnotationException {
         // GET OUTPUT
         Output output = EmbASPManager.getInstance().getHandler().startSync(); //avvia dlv
@@ -694,7 +710,6 @@ public class Game extends JFrame {
         value=genereteBlock();
         nextValueShow.setText(Integer.toString(value));
         nextValueShow.setBounds(615, 45, 50, 50);
-
         nextValueShow.setFont(new Font("SansSerif", Font.BOLD, 20));
         nextValueShow.setEditable(false);
         //centrare la stringa
@@ -794,13 +809,11 @@ public class Game extends JFrame {
                 nextValueShow.setMargin(new Insets(10, 1, 10, 1));
                 break;
         }
-
         prossimoValore.setText("Prossimo valore: ");
     }
     @Override
     public void paint(Graphics g) {
         prossimoValore();
-
         super.paint(g);
         drawRectangles(g);
         fillMatrix(g);
