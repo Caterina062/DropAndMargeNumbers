@@ -369,7 +369,21 @@ public class Game extends JFrame {
         }
     }
 
+    void blockOnTop() { //controllo se abbiamo perso, se un blocco è arrivato in cima
+        for (int i = 0; i < cols; i++) {
+            if (matrix[0][i] != 0) {
+                JOptionPane.showMessageDialog(this, "Game Over", "Warning", JOptionPane.WARNING_MESSAGE);
+                button.setEnabled(false);
+                setScore.updateScore(attualScore);
+                countdownTimer.stop();
+                isGamerOver=true;
 
+                //per mostrare i migliori punteggi
+                showScore();
+                break;
+            }
+        }
+    }
     void showScore(){
         button.setVisible(false);
         scoreLabel.setVisible(false);
