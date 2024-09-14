@@ -81,7 +81,6 @@ public class Game extends JFrame {
         prossimoValore.setFont(new Font("SansSerif", Font.BOLD, 20));
         prossimoValore.setText("Prossimo valore: " + genereteBlock());
 
-
         add(countdownLabel);  // Aggiungi la countdownLabel al frame
         countdownLabel.setBounds(450, 86, 200, 40);
         countdownLabel.setForeground(Color.white);
@@ -103,74 +102,10 @@ public class Game extends JFrame {
 
     int genereteBlock() {
         int valore = possibleValues[random.nextInt(possibleValues.length)];
+        updateValues();
         return valore;
     }
 
-    /*
-    public void actionPerformed(ActionEvent e) throws Exception {
-        //value = genereteBlock();
-        passInputToOracle("DropAndMerge/encoding.asp");
-
-
-        // Timer per il countdown da 10 a 1
-        countdownTime = 10;
-        countdownLabel.setText("Tempo rimanente: " + countdownTime);
-
-
-        countdownTimer = new Timer(1000, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                countdownTime--;
-                countdownLabel.setText("Tempo rimanente: " + countdownTime);
-                if (countdownTime <= 0) {
-                    countdownTimer.stop();
-                    timer.start();  // Avvia il timer per posizionare il blocco automaticamente
-                }
-            }
-        });
-
-        countdownTimer.start();
-        // Timer per far cadere automaticamente il blocco dopo il countdown
-        timer = new Timer(1000, new ActionListener() {  // Cambiato a 1000 ms per allinearsi col countdown
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                colonnaScelta = colonnaPrecedente;
-                for (int i = rows - 1; i >= 0; i--) {
-                    if (matrix[i][colonnaScelta] == 0) {
-                        matrix[i][colonnaScelta] = value;
-                        break;
-                    }
-                }
-                scoreLabel.setText("Score: \n" + attualScore);
-                repaint();
-                merge();
-                blockOnTop();
-                timer.stop();
-            }
-        });
-
-        timer.setRepeats(false);
-        timer.setInitialDelay(countdownTime * 1000);  // Imposta il timer per iniziare dopo il countdown
-        timer.start();
-
-
-        colonnaScelta = getOutputFromOracle();
-        colonnaPrecedente = colonnaScelta;
-        countdownTimer.stop();  // Ferma il countdown
-        timer.stop();  // Ferma il timer dato che l'utente ha scelto la colonna
-
-        for (int i = rows - 1; i >= 0; i--) {
-            if (matrix[i][colonnaScelta] == 0) {
-                matrix[i][colonnaScelta] = value;
-                break;
-            }
-        }
-
-        scoreLabel.setText("Score: \n" + attualScore);
-        repaint();
-        merge();
-        blockOnTop();
-    }*/
     public void actionPerformed(ActionEvent e) throws Exception {
         passInputToOracle("DropAndMerge/encoding.asp");
 
@@ -336,13 +271,14 @@ public class Game extends JFrame {
         }
     }
 
-    void updateValues() {  //TODO aggiunge quando ci sono tre valori nella mtrice con valore maaggiore del doppio dell'ultimo elemento nei possibili
+    void updateValues() {  //aggiunge un valore alla lista dei possibili valori
         int counter=0;
         //LinkedList<Integer> ValueBlock = new LinkedList<>();
-        for(int i=0; i<rows-1; i++){
+        for(int i=0; i<rows; i++){
             for(int j=0; j<cols; j++){
                 if(matrix[i][j]>(possibleValues[possibleValues.length-1])*2){
                     counter+=1;
+                    System.out.println("counter: "+counter);
                 }
             }
         }
@@ -407,7 +343,6 @@ public class Game extends JFrame {
         finalScore.setVisible(true);
         finalScore.setText("Youre Score: " + attualScore + "\n"+"\n Best Scores: \n"+"1. "+ setScore.getHighScores().get(0)+
                 "\n"+ "2. "+ setScore.getHighScores().get(1)+ "\n"+ "3. "+ setScore.getHighScores().get(2));
-
     }
 
     void nuovaPartita(ActionEvent e){
@@ -421,8 +356,6 @@ public class Game extends JFrame {
         countdownLabel.setVisible(true);
         attualScore=0;
         nextValueShow.setVisible(true);
-
-
 
         possibleValues = new int[]{2, 4, 8, 16, 32};
         //richiamare la matrice da disegnare da zero
@@ -442,12 +375,6 @@ public class Game extends JFrame {
     }
 
 
-
-
-
-
-
-
     void drawRectangles(Graphics g) { //disegna la matrice, i quadrati bianchi
         Graphics2D g2d = (Graphics2D) g;
         g2d.setStroke(new BasicStroke(2));
@@ -458,14 +385,6 @@ public class Game extends JFrame {
             }
         }
     }
-
-
-
-
-
-
-
-
 
 
     void fillMatrix(Graphics g) { //disegna i quadratini colorati in base al valore
