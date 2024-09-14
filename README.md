@@ -2,10 +2,12 @@
 
 ![Screenshot 2024-09-13 220331](https://github.com/user-attachments/assets/18951e33-f03c-48c4-b671-a283f3b0e1a9)
 
+
 Introduzione.
 
 
-Drop and Merge- Numbers è un progetto implementato per il corso di Intelligenza Artificiale, che combina una strategia di gioco con l'implementazione di un intelligenza artificiale basata su Answer Set Programming (ASP), la parte grafica è stata impelmentata utilizzando  le Swing, una libreria di Java.
+Drop and Merge-Numbers è un progetto implementato per il corso di Intelligenza Artificiale, che combina una strategia di gioco con l'implementazione di un intelligenza artificiale basata su Answer Set Programming (ASP), la parte grafica è stata impelmentata utilizzando le Swing, una libreria di Java.
+
 
 Regole del gioco
 
@@ -14,18 +16,19 @@ Il gioco finisce quando un blocco arriva a toccare la cima della matrice.
 Quando si perde il gioco mostra a schermo i tre punteggi più alti raggiunti nelle giocate precedenti con "best score" e il nostro punteggio "your score".
 
 
-Technologies Used
-The project makes use of various technologies, including:
 
-Answer Set Programming (ASP): Used to implement the artificial intelligence module that makes strategic decisions for players.
-Java Swing: Used for the development of the game's graphical interface.
-EmbASP: Java library for integrating ASP into Java projects.
-DLV2: ASP system used for executing ASP programs.
-Starting the Project
-To start the project, follow these steps:
+Tecnologie usate
+
+Nel progetto vengono utilizzati varie tecnologie, icluse:
+
+Answer Set Programming (ASP): Utilizzato per implementare l'intelligenza artificiale per scegliere la mossa migliore da fare.
+Java Swing: Usata per la parte dell'interfaccia grafica.
+EmbASP: Libreria Java per interagire con ASP nel progetto Java.
+DLV2: ASP usato per l'esecuzione del programma ASP.
 
 
-immagine fine
+
+
 ![Screenshot 2024-09-13 220412](https://github.com/user-attachments/assets/8e78da06-e85f-4bc9-825e-3a04769dd500)
 
 
